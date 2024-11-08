@@ -10,6 +10,9 @@
 
 /** Forward declaration to improve compiling times */
 class UNiagaraSystem;
+class UInputMappingContext;
+class UInputAction;
+class UMainHub;
 
 UCLASS()
 class AUSPlayerController : public APlayerController
@@ -18,6 +21,8 @@ class AUSPlayerController : public APlayerController
 
 public:
 	AUSPlayerController();
+
+	inline UMainHub* GetMainHubWidget() const { return MainHubWidget; }
 
 	/** Time Threshold to know if it was a short press */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
@@ -29,15 +34,15 @@ public:
 
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
-	class UInputMappingContext* DefaultMappingContext;
+	UInputMappingContext* DefaultMappingContext;
 	
 	/** Jump Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
-	class UInputAction* SetDestinationClickAction;
+	UInputAction* SetDestinationClickAction;
 
 	/** Jump Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
-	class UInputAction* SetDestinationTouchAction;
+	UInputAction* SetDestinationTouchAction;
 
 protected:
 	/** True if the controlled character should navigate to the mouse cursor. */
@@ -60,6 +65,12 @@ private:
 
 	bool bIsTouch; // Is it a touch device
 	float FollowTime; // For how long it has been pressed
+
+	/** WBP_MainHub Class */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = UI, meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<UMainHub> MainHubWidgetClass;
+
+	/** WBP_MailHub Instance */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = UI, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UMainHub> MainHubWidget;
 };
-
-

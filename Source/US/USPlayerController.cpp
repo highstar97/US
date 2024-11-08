@@ -1,8 +1,10 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
-
 #include "USPlayerController.h"
+
+#include "UI/MainHub.h"
+
 #include "GameFramework/Pawn.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
+#include "Blueprint/UserWidget.h"
 #include "NiagaraSystem.h"
 #include "NiagaraFunctionLibrary.h"
 #include "USCharacter.h"
@@ -23,10 +25,17 @@ void AUSPlayerController::BeginPlay()
 	// Call the base class  
 	Super::BeginPlay();
 
-	//Add Input Mapping Context
+	// Add Input Mapping Context
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
 	{
 		Subsystem->AddMappingContext(DefaultMappingContext, 0);
+	}
+
+	// Create MailHubWidget
+	if (MainHubWidgetClass != nullptr)
+	{
+		MainHubWidget = CreateWidget<UMainHub>(this, MainHubWidgetClass);
+		MainHubWidget->AddToViewport(0);
 	}
 }
 
