@@ -32,7 +32,7 @@ public:
 	TObjectPtr<UMailSystem> GetMailSystemOfUser(int32 UserID) const;
 
 private:
-	const int32 NumOfProcessingLimits = 300;	// 처리량 제한 크기
+	const int32 NumOfProcessingLimits = 10000;	// 처리량 제한 크기
 
 	int32 NumOfMails;		// MailRouter에 존재하는 Mail의 수
 

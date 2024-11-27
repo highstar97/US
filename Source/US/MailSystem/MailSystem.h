@@ -4,7 +4,7 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "MailSystem.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMailReceived, UMailData*, NewMail);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMailReceived);
 
 class UMailData;
 
@@ -18,10 +18,12 @@ public:
 	
 	virtual void Deinitialize() override;
 
+	TArray<TObjectPtr<UMailData>>& GetReceivedMails() { return ReceivedMails; }
+
 	UFUNCTION(BlueprintCallable)
 	void SendMailToRouter(UMailData* MailData);
 
-	void ReceiveMailFromRouter(UMailData* MailData);
+	void ReceiveMailsFromRouter(TArray<TObjectPtr<UMailData>>&& MailDatas);
 
 	FOnMailReceived OnMailReceived;
 

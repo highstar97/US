@@ -14,17 +14,17 @@ void UExpressMailBox::NativeConstruct()
 	MailDetail.Get()->SetVisibility(ESlateVisibility::Hidden);
 	ListView_ExpressMail.Get()->OnItemClicked().AddUObject(this, &UExpressMailBox::SelectListViewItem);
 
-	UMailSystem* MailSystem = GetGameInstance()->GetSubsystem<UMailSystem>();
-	if (MailSystem)
+	MailSystem = GetGameInstance()->GetSubsystem<UMailSystem>();
+	if (MailSystem.Get())
 	{
-		MailSystem->OnMailReceived.AddDynamic(this, &UExpressMailBox::AddExpressMailEntry);
+		MailSystem.Get()->OnMailReceived.AddDynamic(this, &UExpressMailBox::UpdateListView);
 	}
 }
 
-void UExpressMailBox::AddExpressMailEntry(UMailData* MailData)
+void UExpressMailBox::UpdateListView()
 {
-	TRACE_CPUPROFILER_EVENT_SCOPE(AddExpressMailEntry);
-	ListView_ExpressMail.Get()->AddItem(MailData);
+	TRACE_CPUPROFILER_EVENT_SCOPE(UpdateListView);
+	ListView_ExpressMail.Get()->SetListItems(MailSystem.Get()->GetReceivedMails());
 }
 
 void UExpressMailBox::SelectListViewItem(UObject* Item)

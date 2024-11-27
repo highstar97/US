@@ -49,10 +49,11 @@ void UMailRouter_Server::Tick(float DeltaTime)
 			}
 
 			// 메일 전송
-			for (int32 i = 0; i < NumOfMailsCanSend; ++i)
+			/*for (int32 i = 0; i < NumOfMailsCanSend; ++i)
 			{
 				MailSystem->ReceiveMailFromRouter(PendingMails[i]);
-			}
+			}*/
+			MailSystem->ReceiveMailsFromRouter(TArray<TObjectPtr<UMailData>>(PendingMails.GetData(), NumOfMailsCanSend));
 
 			// 보낸 메일 제거
 			PendingMails.RemoveAt(0, NumOfMailsCanSend, true);

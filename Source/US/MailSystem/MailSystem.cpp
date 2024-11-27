@@ -29,10 +29,8 @@ void UMailSystem::SendMailToRouter(UMailData* MailData)
 	}
 }
 
-void UMailSystem::ReceiveMailFromRouter(UMailData* MailData)
+void UMailSystem::ReceiveMailsFromRouter(TArray<TObjectPtr<UMailData>>&& MailDatas)
 {
-	if (MailData == nullptr) return;
-
-	ReceivedMails.Emplace(MailData);
-	OnMailReceived.Broadcast(MailData); 
+	ReceivedMails.Append(MoveTemp(MailDatas));
+	OnMailReceived.Broadcast();
 }

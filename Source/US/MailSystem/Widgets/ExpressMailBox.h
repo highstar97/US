@@ -7,6 +7,7 @@
 class UListView;
 class UMailData;
 class UMailDetail;
+class UMailSystem;
 
 UCLASS()
 class US_API UExpressMailBox : public UUserWidget
@@ -17,10 +18,12 @@ public:
 	virtual void NativeConstruct() override;
 
 	UFUNCTION()
-	void AddExpressMailEntry(UMailData* MailData);
+	void UpdateListView();
 
 private:
 	void SelectListViewItem(UObject* Item);
+
+	bool bIsMailDetailOpened; // Is MailDetail opened
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (BIndWidget, AllowPrivateAccess = "true"))
 	TObjectPtr<UListView> ListView_ExpressMail;
@@ -29,5 +32,6 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = UI, meta = (BindWidget, AllowPrivateAccess = "true"))
 	TObjectPtr<UMailDetail> MailDetail;
 	
-	bool bIsMailDetailOpened; // Is MailDetail opened
+	UPROPERTY()
+	TObjectPtr<UMailSystem> MailSystem;
 };
