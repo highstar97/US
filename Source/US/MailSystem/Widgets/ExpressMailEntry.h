@@ -18,7 +18,9 @@ public:
 	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
 
 private:
-	void UpdateTextBlock_Sender(FString SenderName);
+	void UpdateTextBlock_Sender(const FString& SenderName);
+
+	void UpdateTextBlock_Title(const FString& Title);
 
 	UPROPERTY(VisibleAnywhere, Category = Data)
 	TObjectPtr<UMailData> Data;

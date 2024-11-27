@@ -31,6 +31,7 @@ void AUSGameMode::PostLogin(APlayerController* NewPlayer)
 	Super::PostLogin(NewPlayer);
 
 	PlayerControllerNumberingMap.Emplace(NumOfMap, NewPlayer);
+
 	FString NewName("USPlayer_");
 	NewName.Append(FString::FromInt(NumOfMap++));
 	ChangeName(NewPlayer, NewName, false);

@@ -14,10 +14,15 @@ void UExpressMailEntry::NativeOnListItemObjectSet(UObject* ListItemObject)
 	
 	UpdateTextBlock_Sender(MailData->SenderName);
 	// TextBlock_RemainingDuration->SetText();
-	TextBlock_Title.Get()->SetText(FText::FromString(MailData->Title));
+	UpdateTextBlock_Title(MailData->Title);
 }
 
-void UExpressMailEntry::UpdateTextBlock_Sender(FString SenderName)
+void UExpressMailEntry::UpdateTextBlock_Sender(const FString& SenderName)
 {
 	TextBlock_Sender.Get()->SetText(FText::FromString(SenderName));
+}
+
+void UExpressMailEntry::UpdateTextBlock_Title(const FString& Title)
+{
+	TextBlock_Title.Get()->SetText(FText::FromString(Title));
 }

@@ -16,6 +16,7 @@ class US_API UExpressMailBox : public UUserWidget
 public:
 	virtual void NativeConstruct() override;
 
+	UFUNCTION()
 	void AddExpressMailEntry(UMailData* MailData);
 
 private:
