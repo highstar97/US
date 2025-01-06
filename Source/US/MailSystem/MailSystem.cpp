@@ -31,6 +31,6 @@ void UMailSystem::SendMailToRouter(UMailData* MailData)
 
 void UMailSystem::ReceiveMailsFromRouter(TArray<TObjectPtr<UMailData>>&& MailDatas)
 {
-	ReceivedMails.Append(MoveTemp(MailDatas));
+	ReceivedMails.Append(MailDatas);
 	OnMailReceived.Broadcast();
 }
