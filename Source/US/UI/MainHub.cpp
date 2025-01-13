@@ -1,7 +1,8 @@
 #include "MainHub.h"
 
-#include "../USPlayerController.h"
-#include "../MailSystem/Widgets/ExpressMailBox.h"
+#include "Controllers/USPlayerController.h"
+#include "UI/InteractionWidget.h"
+#include "MailSystem/Widgets/ExpressMailBox.h"
 
 #include "Components/Button.h"
 #include "Components/Image.h"
@@ -16,6 +17,7 @@ void UMainHub::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+	InteractionWidget.Get()->SetVisibility(ESlateVisibility::Hidden);
 	ExpressMailBox.Get()->SetVisibility(ESlateVisibility::Hidden);
 
 	// Binding Button_ExpressMailBox

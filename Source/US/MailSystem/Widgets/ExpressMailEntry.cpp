@@ -1,8 +1,8 @@
 #include "ExpressMailEntry.h"
 
-#include "../../USGameMode.h"
-#include "../MailData.h"
-#include "MailDetail.h"
+#include "USGameMode.h"
+#include "MailSystem/MailData.h"
+#include "MailSystem/Widgets/MailDetail.h"
 
 #include "Components/TextBlock.h"
 

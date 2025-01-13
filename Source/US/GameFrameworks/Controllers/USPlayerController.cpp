@@ -1,5 +1,7 @@
 #include "USPlayerController.h"
 
+#include "Characters/USCharacter.h"
+#include "Components/USInteractionComponent.h"
 #include "UI/MainHub.h"
 
 #include "GameFramework/Pawn.h"
@@ -7,7 +9,6 @@
 #include "Blueprint/UserWidget.h"
 #include "NiagaraSystem.h"
 #include "NiagaraFunctionLibrary.h"
-#include "USCharacter.h"
 #include "Engine/World.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -18,6 +19,9 @@ AUSPlayerController::AUSPlayerController()
 	DefaultMouseCursor = EMouseCursor::Default;
 	CachedDestination = FVector::ZeroVector;
 	FollowTime = 0.f;
+
+	// Create a InteractionComponent...
+	InteractionComponent = CreateDefaultSubobject<UUSInteractionComponent>(TEXT("InteractionComponent"));
 }
 
 void AUSPlayerController::BeginPlay()
@@ -47,6 +51,8 @@ void AUSPlayerController::SetupInputComponent()
 	// Set up action bindings
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent))
 	{
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &AUSPlayerController::OnInteractStarted);
+
 		// Setup mouse input events
 		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Started, this, &AUSPlayerController::OnInputStarted);
 		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Triggered, this, &AUSPlayerController::OnSetDestinationTriggered);
@@ -58,6 +64,28 @@ void AUSPlayerController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Triggered, this, &AUSPlayerController::OnTouchTriggered);
 		EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Completed, this, &AUSPlayerController::OnTouchReleased);
 		EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Canceled, this, &AUSPlayerController::OnTouchReleased);
+	}
+}
+
+void AUSPlayerController::OnInteractStarted()
+{
+	if (!IsValid(GetInteractionComponent())) return;
+
+	TOptional<bool> bIsShort = GetInteractionComponent()->IsInteractShort();
+
+	if (!bIsShort.IsSet())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Nothing to Interact"));
+		return;
+	}
+
+	if (bIsShort.GetValue())
+	{
+		GetInteractionComponent()->InteractShort();
+	}
+	else
+	{
+		GetInteractionComponent()->InteractLong();
 	}
 }
 

@@ -1,8 +1,8 @@
 #include "ExpressMailBox.h"
 
-#include "MailDetail.h"
-#include "../MailSystem.h"
-#include "../MailData.h"
+#include "MailSystem/MailData.h"
+#include "MailSystem/MailSystem.h"
+#include "MailSystem/Widgets/MailDetail.h"
 
 #include "Components/ListView.h"
 

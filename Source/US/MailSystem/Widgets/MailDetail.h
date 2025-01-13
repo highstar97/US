@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "../MailData.h"
+#include "MailSystem/MailData.h"
 #include "MailDetail.generated.h"
 
 class UTextBlock;

@@ -9,5 +9,10 @@ public class US : ModuleRules
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
         PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay", "NavigationSystem", "AIModule", "Niagara", "EnhancedInput", "UMG" });
+
+        PublicIncludePaths.AddRange(new string[]
+        {
+            "US", "US/GameFrameworks"
+        });
     }
 }

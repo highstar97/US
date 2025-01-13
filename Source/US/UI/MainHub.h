@@ -4,9 +4,10 @@
 #include "Blueprint/UserWidget.h"
 #include "MainHub.generated.h"
 
+class UInteractionWidget;
+class UExpressMailBox;
 class UButton;
 class UImage;
-class UExpressMailBox;
 
 UCLASS()
 class US_API UMainHub : public UUserWidget
@@ -18,10 +19,16 @@ public:
 
     virtual void NativeConstruct() override;
 
-    inline UExpressMailBox* GetExpressMailBox() const { return ExpressMailBox.Get(); }
+    FORCEINLINE UInteractionWidget* GetInteractionWidget() const { return InteractionWidget.Get(); }
+
+    FORCEINLINE UExpressMailBox* GetExpressMailBox() const { return ExpressMailBox.Get(); }
 
 private:
     bool bIsExpressMailBoxOpened; // Is ExpressMailBox opened
+
+    /** WBP_InteractionWidget Instance */
+    UPROPERTY(VisibleInstanceOnly, Category = UI, meta = (BindWidget))
+    TObjectPtr<UInteractionWidget> InteractionWidget;
 
     /** WBP_ExpressMailBox Instance */
     UPROPERTY(VisibleInstanceOnly, Category = UI, meta = (BindWidget))

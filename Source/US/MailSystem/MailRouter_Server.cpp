@@ -1,8 +1,8 @@
 #include "MailRouter_Server.h"
 
-#include "../USGameMode.h"
-#include "MailSystem.h"
-#include "MailData.h"
+#include "USGameMode.h"
+#include "MailSystem/MailSystem.h"
+#include "MailSystem/MailData.h"
 
 #include "HAL/PlatformTime.h"
 

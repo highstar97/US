@@ -1,8 +1,8 @@
 #include "MailSystem.h"
 
-#include "../USGameMode.h"
-#include "MailRouter_Server.h"
-#include "MailData.h"
+#include "USGameMode.h"
+#include "MailSystem/MailRouter_Server.h"
+#include "MailSystem/MailData.h"
 
 void UMailSystem::Initialize(FSubsystemCollectionBase& Collection)
 {

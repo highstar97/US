@@ -1,5 +1,3 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -8,7 +6,7 @@
 #include "InputActionValue.h"
 #include "USPlayerController.generated.h"
 
-/** Forward declaration to improve compiling times */
+class UUSInteractionComponent;
 class UNiagaraSystem;
 class UInputMappingContext;
 class UInputAction;
@@ -22,7 +20,9 @@ class AUSPlayerController : public APlayerController
 public:
 	AUSPlayerController();
 
-	inline UMainHub* GetMainHubWidget() const { return MainHubWidget; }
+	FORCEINLINE UUSInteractionComponent* GetInteractionComponent() const { return InteractionComponent; }
+
+	FORCEINLINE UMainHub* GetMainHubWidget() const { return MainHubWidget; }
 
 	/** Time Threshold to know if it was a short press */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
@@ -36,11 +36,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	UInputMappingContext* DefaultMappingContext;
 	
-	/** Jump Input Action */
+	/** Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* InteractAction;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	UInputAction* SetDestinationClickAction;
 
-	/** Jump Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	UInputAction* SetDestinationTouchAction;
 
@@ -53,6 +55,7 @@ protected:
 	// To add mapping context
 	virtual void BeginPlay();
 
+	void OnInteractStarted();
 	/** Input handlers for SetDestination action. */
 	void OnInputStarted();
 	void OnSetDestinationTriggered();
@@ -65,6 +68,9 @@ private:
 
 	bool bIsTouch; // Is it a touch device
 	float FollowTime; // For how long it has been pressed
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Interaction, meta = (AllowPrivateAccess = "true"))
+	UUSInteractionComponent* InteractionComponent;
 
 	/** WBP_MainHub Class */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = UI, meta = (AllowPrivateAccess = "true"))
