@@ -5,6 +5,8 @@
 #include "Interfaces/InteractionInterface.h"
 #include "USInteractionComponent.generated.h"
 
+class AUSPlayerController;
+class AUSCharacter;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class US_API UUSInteractionComponent : public UActorComponent
@@ -25,8 +27,6 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
 private:
 	UFUNCTION()
 	void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
@@ -45,6 +45,9 @@ private:
 private:
 	FTimerHandle InteractionProgressHandle;
 	FTimerHandle InteractionTimerHandle;
+
+	TObjectPtr<AUSPlayerController> PlayerController;
+	TWeakObjectPtr<AUSCharacter> PlayerCharacter;
 
 	TScriptInterface<IInteractionInterface> CurrentInteractable;
 };

@@ -37,7 +37,8 @@ void AUSWeapon::Interact(ACharacter* Interactor)
 	AUSCombatCharacter* Character = Cast<AUSCombatCharacter>(Interactor);
 	if (Character && Character->GetWeaponComponent())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("%s interact with %s!"), *Character->GetName(), *GetName());
+		UE_LOG(LogTemp, Warning, TEXT("%s interact with %s!"), *Character->GetActorLabel(), *GetActorLabel());
+		Character->GetWeaponComponent()->EquipWeapon(this);
 	}
 }
 
@@ -57,15 +58,16 @@ void AUSWeapon::OnConstruction(const FTransform& Transform)
 
 void AUSWeapon::Initialize()
 {
-	if (DataAsset)
+	if (WeaponDataAsset)
 	{
-		WeaponMesh->SetStaticMesh(DataAsset->AssetData.Mesh);
-
-		InteractableData.Name = DataAsset->TextData.Name;
-		InteractableData.Action = DataAsset->TextData.Purpose;
-		InteractableData.Quantity = DataAsset->NumericData.Quantity;
-		InteractableData.InteractionDuration = DataAsset->NumericData.InteractionDuration;
-		InteractableData.InteractableType = DataAsset->NumericData.InteractionDuration > 0.0f ? EInteractableType::PRESSLONG : EInteractableType::PRESSSHORT;
+		WeaponMesh->SetStaticMesh(WeaponDataAsset->AssetData.Mesh);
+		
+		SetActorLabel(FText(WeaponDataAsset->TextData.Name).ToString());
+		InteractableData.Name = WeaponDataAsset->TextData.Name;
+		InteractableData.Action = WeaponDataAsset->TextData.Purpose;
+		InteractableData.Quantity = WeaponDataAsset->NumericData.Quantity;
+		InteractableData.InteractionDuration = WeaponDataAsset->NumericData.InteractionDuration;
+		InteractableData.InteractableType = WeaponDataAsset->NumericData.InteractionDuration > 0.0f ? EInteractableType::PRESSLONG : EInteractableType::PRESSSHORT;
 
 		SetWeaponOutlineColor();
 	}
@@ -73,9 +75,9 @@ void AUSWeapon::Initialize()
 
 void AUSWeapon::SetWeaponOutlineColor()
 {
-	if (WeaponMesh && DataAsset)
+	if (WeaponMesh && WeaponDataAsset)
 	{
-		WeaponMesh->CustomDepthStencilValue = static_cast<uint8>(DataAsset->Rarity);
+		WeaponMesh->CustomDepthStencilValue = static_cast<uint8>(WeaponDataAsset->Rarity);
 	}
 	else
 	{

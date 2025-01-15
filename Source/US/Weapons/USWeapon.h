@@ -39,7 +39,7 @@ protected:
 	TObjectPtr<UPostProcessComponent> PostProcessComponent;
 
 	UPROPERTY(Category = Weapon, EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UWeaponDataAsset> DataAsset;
+	TObjectPtr<UWeaponDataAsset> WeaponDataAsset;
 
 private:
 	void Initialize();

@@ -18,7 +18,9 @@ public:
 
 	AUSWeapon* GetEquippedWeapon() const { return EquippedWeapon.Get(); }
 
-	void EquipWeapon(AUSWeapon* Weapon);
+	void EquipWeapon(AUSWeapon* NewWeapon);
+
+	void UnequipWeapon();
 
 	void UseWeapon();
 
