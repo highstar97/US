@@ -16,13 +16,11 @@ class US_API UUSInteractionComponent : public UActorComponent
 public:	
 	UUSInteractionComponent();
 
-	TOptional<bool> IsInteractShort() const;
+	void HandleInteract();
 
 	void InteractShort();
 	
 	void InteractLong();
-
-	void CancelInteraction();
 
 protected:
 	virtual void BeginPlay() override;
@@ -38,16 +36,22 @@ private:
 
 	void HideInteractionUI();
 
-	void UpdateInteractionWidget();
+	bool IsReadyToInteract();
+
+	void UpdateInteractLong();
+
+	void UpdateInteractionProgress();
 
 	void CompleteInteraction();
+
+	void FailedtoInteract();
 
 private:
 	FTimerHandle InteractionProgressHandle;
 	FTimerHandle InteractionTimerHandle;
 
-	TObjectPtr<AUSPlayerController> PlayerController;
-	TWeakObjectPtr<AUSCharacter> PlayerCharacter;
+	TObjectPtr<AUSPlayerController> OwnerController;
+	TWeakObjectPtr<AUSCharacter> OwnerCharacter;
 
 	TScriptInterface<IInteractionInterface> CurrentInteractable;
 };

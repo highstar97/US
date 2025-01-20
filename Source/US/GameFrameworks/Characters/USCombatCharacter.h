@@ -4,7 +4,7 @@
 #include "Characters/USCharacter.h"
 #include "USCombatCharacter.generated.h"
 
-class UUSWeaponComponent;
+class UUSCombatComponent;
 
 UCLASS()
 class US_API AUSCombatCharacter : public AUSCharacter
@@ -14,9 +14,14 @@ class US_API AUSCombatCharacter : public AUSCharacter
 public:
 	AUSCombatCharacter();
 
-	FORCEINLINE UUSWeaponComponent* GetWeaponComponent() const { return WeaponComponent; }
+	FORCEINLINE UUSCombatComponent* GetCombatComponent() const { return CombatComponent; }
 
 private:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon, meta = (AllowPrivateAccess = "true"))
-	UUSWeaponComponent* WeaponComponent;
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	void Attack();
+
+private:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Component, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UUSCombatComponent> CombatComponent;
 };

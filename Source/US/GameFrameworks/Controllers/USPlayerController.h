@@ -22,7 +22,7 @@ public:
 
 	FORCEINLINE UUSInteractionComponent* GetInteractionComponent() const { return InteractionComponent; }
 
-	FORCEINLINE UMainHub* GetMainHubWidget() const { return MainHubWidget; }
+	FORCEINLINE UMainHub* GetMainHubWidget() const { return MainHubWidget.Get(); }
 
 	/** Time Threshold to know if it was a short press */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
@@ -38,12 +38,15 @@ public:
 	
 	/** Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* AttackAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* InteractAction;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta=(AllowPrivateAccess = "true"))
 	UInputAction* SetDestinationClickAction;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta=(AllowPrivateAccess = "true"))
 	UInputAction* SetDestinationTouchAction;
 
 protected:
@@ -78,5 +81,5 @@ private:
 
 	/** WBP_MailHub Instance */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = UI, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UMainHub> MainHubWidget;
+	TWeakObjectPtr<UMainHub> MainHubWidget;
 };

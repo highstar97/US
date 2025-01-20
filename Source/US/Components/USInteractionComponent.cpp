@@ -2,6 +2,7 @@
 
 #include "Characters/USCharacter.h"
 #include "Controllers/USPlayerController.h"
+#include "Components/USStateComponent.h"
 #include "Interfaces/InteractionInterface.h"
 #include "UI/MainHub.h"
 #include "UI/InteractionWidget.h"
@@ -13,74 +14,70 @@ UUSInteractionComponent::UUSInteractionComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
-TOptional<bool> UUSInteractionComponent::IsInteractShort() const
-{ 
-    if (IsValid(CurrentInteractable.GetObject()))
+void UUSInteractionComponent::HandleInteract()
+{
+    if (!IsValid(CurrentInteractable.GetObject()))
     {
-        bool bIsShort = CurrentInteractable->InteractableData.InteractableType == EInteractableType::PRESSSHORT;
-        return TOptional<bool>(bIsShort);
+        UE_LOG(LogTemp, Warning, TEXT("Nothing to Interact"));
+        return;
     }
+    if (!IsValid(OwnerController)) return;
+    if (!OwnerCharacter.IsValid()) return;
 
-    return TOptional<bool>();
+    if (IsReadyToInteract())
+    {
+        OwnerController->StopMovement();
+        OwnerCharacter.Get()->GetStateComponent()->SetCurrentState(EState::INTERACTING);
+
+        if (CurrentInteractable->InteractableData.InteractableType == EInteractableType::PRESSSHORT)
+        {
+            InteractShort();
+        }
+        else
+        {
+            InteractLong();
+        }
+    }
 }
 
 void UUSInteractionComponent::InteractShort()
 {
     if (!IsValid(CurrentInteractable.GetObject())) return;
 
-    if (IsValid(PlayerController))
-    {
-        if (PlayerCharacter.IsValid())
-        {
-            CurrentInteractable->Interact(PlayerCharacter.Get());
-        }
-    }
+    if (!OwnerCharacter.IsValid()) return;
+
+    CurrentInteractable->Interact(OwnerCharacter.Get());
     CurrentInteractable = nullptr;
+
+    OwnerCharacter.Get()->GetStateComponent()->SetCurrentState(EState::IDLE);
+    HideInteractionUI();
 }
 
 void UUSInteractionComponent::InteractLong()
 {
     if (!IsValid(CurrentInteractable.GetObject())) return;
 
-    float InteractionDuration = CurrentInteractable->InteractableData.InteractionDuration;
+    if (!OwnerCharacter.IsValid()) return;
 
-    if (IsValid(PlayerController))
+    if (UWorld* World = GetWorld())
     {
-        UWorld* World = GetWorld();
-        if (World)
-        {
-            // 진행률 업데이트 타이머 설정
-            World->GetTimerManager().SetTimer(
-                InteractionProgressHandle,
-                this,
-                &UUSInteractionComponent::UpdateInteractionWidget,
-                0.1f,
-                true
-            );
+        // 진행률 업데이트 타이머 설정
+        World->GetTimerManager().SetTimer(
+            InteractionProgressHandle,
+            this,
+            &UUSInteractionComponent::UpdateInteractLong,
+            0.1f,
+            true
+        );
 
-            // Interact 완료 타이머 설정
-            World->GetTimerManager().SetTimer(
-                InteractionTimerHandle,
-                this,
-                &UUSInteractionComponent::CompleteInteraction,
-                InteractionDuration,
-                false
-            );
-        }
-    }
-}
-
-// TODO : StateComponent와 연계하여 Player의 움직임 감지하면 Cancel 실행되도록 하기
-void UUSInteractionComponent::CancelInteraction()
-{
-    UWorld* World = GetWorld();
-
-    if (World)
-    {
-        GetWorld()->GetTimerManager().ClearTimer(InteractionTimerHandle);
-        GetWorld()->GetTimerManager().ClearTimer(InteractionProgressHandle);
-
-        UE_LOG(LogTemp, Log, TEXT("Interaction Cancelled"));
+        // Interact 완료 타이머 설정
+        World->GetTimerManager().SetTimer(
+            InteractionTimerHandle,
+            this,
+            &UUSInteractionComponent::CompleteInteraction,
+            CurrentInteractable->InteractableData.InteractionDuration,
+            false
+        );
     }
 }
 
@@ -89,12 +86,12 @@ void UUSInteractionComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-    if (PlayerController = Cast<AUSPlayerController>(GetOwner()))
+    if (OwnerController = Cast<AUSPlayerController>(GetOwner()))
     {
-        PlayerCharacter = Cast<AUSCharacter>(PlayerController->GetCharacter());
-        if (PlayerCharacter.IsValid())
+        OwnerCharacter = Cast<AUSCharacter>(OwnerController->GetCharacter());
+        if (OwnerCharacter.IsValid())
         {
-            UCapsuleComponent* CapsuleComponent = PlayerCharacter.Get()->FindComponentByClass<UCapsuleComponent>();
+            UCapsuleComponent* CapsuleComponent = OwnerCharacter.Get()->FindComponentByClass<UCapsuleComponent>();
             if (CapsuleComponent)
             {
                 CapsuleComponent->OnComponentBeginOverlap.AddDynamic(this, &UUSInteractionComponent::OnOverlapBegin);
@@ -127,70 +124,123 @@ void UUSInteractionComponent::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, 
 
 void UUSInteractionComponent::ShowInteractionUI()
 {
-    if (IsValid(PlayerController))
+    if (!IsValid(OwnerController)) return;
+
+    if (!IsValid(CurrentInteractable.GetObject())) return;
+
+    if (UInteractionWidget* InteractionWidget = OwnerController->GetMainHubWidget()->GetInteractionWidget())
     {
-        if (UInteractionWidget* InteractionWidget = PlayerController->GetMainHubWidget()->GetInteractionWidget())
+        if (InteractionWidget->GetVisibility() != ESlateVisibility::Visible)
         {
-            UE_LOG(LogTemp, Warning, TEXT("Showing Interaction UI"));
-            if (InteractionWidget->GetVisibility() != ESlateVisibility::Visible)
-            {
-                InteractionWidget->SetVisibility(ESlateVisibility::Visible);
-            }
-            InteractionWidget->UpdateWidget(&CurrentInteractable->InteractableData);
+            InteractionWidget->SetVisibility(ESlateVisibility::Visible);
         }
+        InteractionWidget->UpdateWidget(&CurrentInteractable->InteractableData);
     }
 }
 
 void UUSInteractionComponent::HideInteractionUI()
 {
-    if (IsValid(PlayerController))
+    if (!IsValid(OwnerController)) return;
+
+    if (UInteractionWidget* InteractionWidget = OwnerController->GetMainHubWidget()->GetInteractionWidget())
     {
-        if (UInteractionWidget* InteractionWidget = PlayerController->GetMainHubWidget()->GetInteractionWidget())
+        if (InteractionWidget->GetVisibility() == ESlateVisibility::Visible)
         {
-            if (InteractionWidget->GetVisibility() == ESlateVisibility::Visible)
-            {
-                UE_LOG(LogTemp, Warning, TEXT("Hiding Interaction UI"));
-                InteractionWidget->SetVisibility(ESlateVisibility::Collapsed);
-            }
+            InteractionWidget->SetVisibility(ESlateVisibility::Collapsed);
         }
     }
 }
 
-void UUSInteractionComponent::UpdateInteractionWidget()
+bool UUSInteractionComponent::IsReadyToInteract()
 {
-    if (IsValid(PlayerController))
-    {
-        if (UInteractionWidget* InteractionWidget = PlayerController->GetMainHubWidget()->GetInteractionWidget())
-        {
-            float RemainingTime = GetWorld()->GetTimerManager().GetTimerRemaining(InteractionTimerHandle);
-            float InteractionDuration = CurrentInteractable->InteractableData.InteractionDuration;
-            float Progress = FMath::Clamp(1.0f - (RemainingTime / InteractionDuration), 0.0f, 1.0f);
+    if (!OwnerCharacter.IsValid()) return false;
 
-            InteractionWidget->SetInteractionProgress(Progress);
-        }
+    switch (OwnerCharacter.Get()->GetStateComponent()->GetCurrentState())
+    {
+    case(EState::IDLE):
+    {
+        return true;
+    }
+    case(EState::WALKING):
+    {
+        return true;
+    }
+    case(EState::FALLING):
+    {
+        return false;
+    }
+    case(EState::INTERACTING):
+    {
+        return false;
+    }
+    default:
+    {
+        return false;
+    }
+    }
+}
+
+void UUSInteractionComponent::UpdateInteractLong()
+{
+    if (!OwnerCharacter.IsValid()) return;
+
+    if (OwnerCharacter.Get()->GetStateComponent()->GetCurrentState() == EState::INTERACTING)
+    {
+        UpdateInteractionProgress();
+    }
+    else
+    {
+        FailedtoInteract();
+    }
+}
+
+void UUSInteractionComponent::UpdateInteractionProgress()
+{
+    if (!IsValid(CurrentInteractable.GetObject())) return;
+
+    if (!IsValid(OwnerController)) return;
+
+    if (UInteractionWidget* InteractionWidget = OwnerController->GetMainHubWidget()->GetInteractionWidget())
+    {
+        float RemainingTime = GetWorld()->GetTimerManager().GetTimerRemaining(InteractionTimerHandle);
+        float InteractionDuration = CurrentInteractable->InteractableData.InteractionDuration;
+        float Progress = FMath::Clamp(1.0f - (RemainingTime / InteractionDuration), 0.0f, 1.0f);
+
+        InteractionWidget->SetInteractionProgress(Progress);
     }
 }
 
 void UUSInteractionComponent::CompleteInteraction()
 {
-    if (IsValid(CurrentInteractable.GetObject()))
+    if (!IsValid(CurrentInteractable.GetObject())) return;
+
+    if (!IsValid(OwnerController)) return;
+
+    if (UInteractionWidget* InteractionWidget = OwnerController->GetMainHubWidget()->GetInteractionWidget())
     {
-        UE_LOG(LogTemp, Log, TEXT("Interaction Completed with: %s"), *CurrentInteractable->InteractableData.Name.ToString());
+        InteractionWidget->SetInteractionProgress(0.0f);
+    }
 
-        if (IsValid(PlayerController))
-        {
-            if (UInteractionWidget* InteractionWidget = PlayerController->GetMainHubWidget()->GetInteractionWidget())
-            {
-                InteractionWidget->SetInteractionProgress(0.0f);
-            }
-        }
+    if (UWorld* World = GetWorld())
+    {
+        World->GetTimerManager().ClearTimer(InteractionProgressHandle);
+    }
 
-        UWorld* World = GetWorld();
-        if (World)
-        {
-            World->GetTimerManager().ClearTimer(InteractionProgressHandle);
-        }
+    InteractShort();
+}
 
-        InteractShort();
+void UUSInteractionComponent::FailedtoInteract()
+{
+    if (!IsValid(OwnerController)) return;
+
+    if (UInteractionWidget* InteractionWidget = OwnerController->GetMainHubWidget()->GetInteractionWidget())
+    {
+        InteractionWidget->SetInteractionProgress(0.0f);
+    }
+
+    if (UWorld* World = GetWorld())
+    {
+        World->GetTimerManager().ClearTimer(InteractionTimerHandle);
+        World->GetTimerManager().ClearTimer(InteractionProgressHandle);
     }
 }

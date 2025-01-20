@@ -1,6 +1,7 @@
 #include "USWeapon.h"
 
 #include "Characters/USCombatCharacter.h"
+#include "Components/USCombatComponent.h"
 #include "Components/USWeaponComponent.h"
 #include "Weapons/WeaponDataAsset.h"
 
@@ -29,16 +30,18 @@ AUSWeapon::AUSWeapon()
 
 void AUSWeapon::Attack()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Weapon Attack!"));
+	UE_LOG(LogTemp, Warning, TEXT("%s Attack!"), *this->GetActorLabel());
 }
 
 void AUSWeapon::Interact(ACharacter* Interactor)
 {
-	AUSCombatCharacter* Character = Cast<AUSCombatCharacter>(Interactor);
-	if (Character && Character->GetWeaponComponent())
+	if (AUSCombatCharacter* Character = Cast<AUSCombatCharacter>(Interactor))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("%s interact with %s!"), *Character->GetActorLabel(), *GetActorLabel());
-		Character->GetWeaponComponent()->EquipWeapon(this);
+		if (UUSWeaponComponent* WeaponComponent = Character->GetCombatComponent()->GetWeaponComponent())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("%s interact with %s!"), *Character->GetActorLabel(), *GetActorLabel());
+			WeaponComponent->EquipWeapon(this);
+		}
 	}
 }
 

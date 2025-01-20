@@ -36,10 +36,13 @@ void AUSPlayerController::BeginPlay()
 	}
 
 	// Create MailHubWidget
-	if (MainHubWidgetClass != nullptr)
+	if(IsValid(MainHubWidgetClass))
 	{
 		MainHubWidget = CreateWidget<UMainHub>(this, MainHubWidgetClass);
-		MainHubWidget->AddToViewport(0);
+		if (MainHubWidget.IsValid())
+		{
+			MainHubWidget.Get()->AddToViewport(0);
+		}
 	}
 }
 
@@ -71,22 +74,7 @@ void AUSPlayerController::OnInteractStarted()
 {
 	if (!IsValid(GetInteractionComponent())) return;
 
-	TOptional<bool> bIsShort = GetInteractionComponent()->IsInteractShort();
-
-	if (!bIsShort.IsSet())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Nothing to Interact"));
-		return;
-	}
-
-	if (bIsShort.GetValue())
-	{
-		GetInteractionComponent()->InteractShort();
-	}
-	else
-	{
-		GetInteractionComponent()->InteractLong();
-	}
+	GetInteractionComponent()->HandleInteract();
 }
 
 void AUSPlayerController::OnInputStarted()
