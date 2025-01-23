@@ -41,6 +41,8 @@ protected:
 	UPROPERTY(Category = Weapon, EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UWeaponDataAsset> WeaponDataAsset;
 
+	TWeakObjectPtr<ACharacter> OwnerCharacter;
+
 private:
 	void Initialize();
 

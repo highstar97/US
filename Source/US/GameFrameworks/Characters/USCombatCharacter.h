@@ -14,6 +14,8 @@ class US_API AUSCombatCharacter : public AUSCharacter
 public:
 	AUSCombatCharacter();
 
+	virtual void BeginPlay() override;
+
 	FORCEINLINE UUSCombatComponent* GetCombatComponent() const { return CombatComponent; }
 
 private:

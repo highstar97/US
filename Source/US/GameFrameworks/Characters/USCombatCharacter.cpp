@@ -4,10 +4,28 @@
 #include "Components/USCombatComponent.h"
 
 #include "EnhancedInputComponent.h"
+#include "Components/CapsuleComponent.h"
 
 AUSCombatCharacter::AUSCombatCharacter()
 {
     CombatComponent = CreateDefaultSubobject<UUSCombatComponent>(TEXT("CombatComponent"));
+}
+
+void AUSCombatCharacter::BeginPlay()
+{
+    Super::BeginPlay();
+
+    if (GetCapsuleComponent())
+    {
+        if (IsPlayerControlled())
+        {
+            GetCapsuleComponent()->SetCollisionProfileName(TEXT("Player"));
+        }
+        else 
+        {
+            GetCapsuleComponent()->SetCollisionProfileName(TEXT("Enemy"));
+        }
+    }
 }
 
 void AUSCombatCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

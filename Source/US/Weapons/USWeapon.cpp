@@ -1,10 +1,8 @@
 #include "USWeapon.h"
 
-#include "Characters/USCombatCharacter.h"
-#include "Components/USCombatComponent.h"
-#include "Components/USWeaponComponent.h"
 #include "Weapons/WeaponDataAsset.h"
 
+#include "GameFramework/Character.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/PostProcessComponent.h"
@@ -30,19 +28,14 @@ AUSWeapon::AUSWeapon()
 
 void AUSWeapon::Attack()
 {
-	UE_LOG(LogTemp, Warning, TEXT("%s Attack!"), *this->GetActorLabel());
+	
 }
 
 void AUSWeapon::Interact(ACharacter* Interactor)
 {
-	if (AUSCombatCharacter* Character = Cast<AUSCombatCharacter>(Interactor))
-	{
-		if (UUSWeaponComponent* WeaponComponent = Character->GetCombatComponent()->GetWeaponComponent())
-		{
-			UE_LOG(LogTemp, Warning, TEXT("%s interact with %s!"), *Character->GetActorLabel(), *GetActorLabel());
-			WeaponComponent->EquipWeapon(this);
-		}
-	}
+	if (!IsValid(Interactor)) return;
+
+	OwnerCharacter = Interactor;
 }
 
 void AUSWeapon::BeginPlay()
@@ -61,7 +54,7 @@ void AUSWeapon::OnConstruction(const FTransform& Transform)
 
 void AUSWeapon::Initialize()
 {
-	if (WeaponDataAsset)
+	if (IsValid(WeaponDataAsset))
 	{
 		WeaponMesh->SetStaticMesh(WeaponDataAsset->AssetData.Mesh);
 		
@@ -78,7 +71,7 @@ void AUSWeapon::Initialize()
 
 void AUSWeapon::SetWeaponOutlineColor()
 {
-	if (WeaponMesh && WeaponDataAsset)
+	if (IsValid(WeaponMesh) && IsValid(WeaponDataAsset))
 	{
 		WeaponMesh->CustomDepthStencilValue = static_cast<uint8>(WeaponDataAsset->Rarity);
 	}

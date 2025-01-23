@@ -39,6 +39,9 @@ struct FNumericData
 
 public:
 	UPROPERTY(EditAnywhere)
+	float Damage;
+
+	UPROPERTY(EditAnywhere)
 	int32 Quantity;
 
 	UPROPERTY(EditAnywhere)
