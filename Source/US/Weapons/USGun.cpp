@@ -30,28 +30,38 @@ void AUSGun::Attack()
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	if (!IsValid(PlayerController)) return;
 
-	float MouseX, MouseY;
-	if (!PlayerController->GetMousePosition(MouseX, MouseY)) return;
-
 	FHitResult HitResult;
 	if (!PlayerController->GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, HitResult)) return;
 
 	DrawDebugSphere(GetWorld(), HitResult.Location, 1.f, 12, FColor::Green, false, 1.0f);
 
-	FVector TargetLocation = HitResult.Location;
-	TargetLocation.Z = 0.f;
+	FVector CharacterToHit = HitResult.Location - OwnerCharacter->GetActorLocation();
+	CharacterToHit.Z = 0.f;
+	CharacterToHit.Normalize();
 
-	FVector MuzzleLocation = ArrowComponent->GetComponentLocation();
-	MuzzleLocation.Z = 0.f;
-	FVector DirectionToTarget = TargetLocation - MuzzleLocation;
-	
-	OwnerCharacter->SetActorRotation(DirectionToTarget.Rotation());
+	FVector CharacterForward = OwnerCharacter->GetActorForwardVector();
+	CharacterForward.Z = 0.f;
+	CharacterForward.Normalize();
+
+	float DotProduct = FVector::DotProduct(CharacterToHit, CharacterForward);
+	DotProduct = FMath::Clamp(DotProduct, -1.0f, 1.0f);
+	float AngleRadians = FMath::Acos(DotProduct);
+	float AngleDegrees = FMath::RadiansToDegrees(AngleRadians);
+
+	FVector OuterProduct = FVector::CrossProduct(CharacterForward, CharacterToHit);
+	if (OuterProduct.Z < 0.f)
+	{
+		AngleDegrees = -AngleDegrees;
+	}
+
+	FRotator NewRotation = OwnerCharacter->GetActorRotation();
+	NewRotation.Yaw += AngleDegrees;
+	OwnerCharacter->SetActorRotation(NewRotation);
 
 	// Ray Trace
 	FVector TraceStart = ArrowComponent->GetComponentLocation();
 	const float TraceDistance = 10000.0f;
 	FVector TraceEnd = TraceStart + (OwnerCharacter->GetActorForwardVector() * TraceDistance);
-	//FVector TraceEnd = TraceStart + (ArrowComponent->GetForwardVector() * TraceDistance);
 
 	HitResult.Reset();
 	FCollisionQueryParams QueryParams;

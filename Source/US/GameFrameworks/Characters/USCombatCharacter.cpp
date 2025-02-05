@@ -51,6 +51,7 @@ void AUSCombatCharacter::Attack()
 
     if (CombatComponent->CanAttack())
     {
+        GetCharacterMovement()->StopMovementImmediately();
         GetCharacterMovement()->SetMovementMode(MOVE_None);
         CharacterAnimationComponent->PlayAttackMontage();
     }
