@@ -47,14 +47,7 @@ void UUSWeaponComponent::UnequipWeapon()
 
 void UUSWeaponComponent::UseWeapon()
 {
-    if (EquippedWeapon)
-    {
-        EquippedWeapon->Attack();
-    }
-    else
-    {
-        UE_LOG(LogTemp, Warning, TEXT("No Weapon Equipped!"));
-    }
+    EquippedWeapon->Attack();	// CombatComponet에서 Weapon 착용 여부 이미 확인.
 }
 
 void UUSWeaponComponent::BeginPlay()

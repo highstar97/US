@@ -2,9 +2,11 @@
 
 #include "Controllers/USPlayerController.h"
 #include "Components/USCombatComponent.h"
+#include "Components/USCharacterAnimationComponent.h"
 
 #include "EnhancedInputComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 AUSCombatCharacter::AUSCombatCharacter()
 {
@@ -45,8 +47,11 @@ void AUSCombatCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 void AUSCombatCharacter::Attack()
 {
-    if (IsValid(CombatComponent))
+    if (!IsValid(CombatComponent) || !IsValid(CharacterAnimationComponent)) return;
+
+    if (CombatComponent->CanAttack())
     {
-        CombatComponent->Attack();
+        GetCharacterMovement()->SetMovementMode(MOVE_None);
+        CharacterAnimationComponent->PlayAttackMontage();
     }
 }

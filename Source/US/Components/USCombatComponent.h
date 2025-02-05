@@ -21,6 +21,8 @@ public:
 
 	FORCEINLINE UUSWeaponComponent* GetWeaponComponent() const { return WeaponComponent; }
 
+	bool CanAttack() const;
+
 	void Attack();
 
 protected:

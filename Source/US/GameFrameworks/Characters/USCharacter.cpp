@@ -1,6 +1,7 @@
 #include "USCharacter.h"
 
 #include "Components/USStateComponent.h"
+#include "Components/USCharacterAnimationComponent.h"
 
 #include "UObject/ConstructorHelpers.h"
 #include "Camera/CameraComponent.h"
@@ -42,6 +43,8 @@ AUSCharacter::AUSCharacter()
 	TopDownCameraComponent->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
 	StateComponent = CreateDefaultSubobject<UUSStateComponent>(TEXT("State Component"));
+
+	CharacterAnimationComponent = CreateDefaultSubobject<UUSCharacterAnimationComponent>(TEXT("Character Animation Component"));
 
 	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;

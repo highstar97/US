@@ -7,6 +7,7 @@
 class UCameraComponent;
 class USpringArmComponent;
 class UUSStateComponent;
+class UUSCharacterAnimationComponent;
 
 UCLASS(Blueprintable)
 class AUSCharacter : public ACharacter
@@ -23,6 +24,12 @@ public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom.Get(); }
 
 	FORCEINLINE UUSStateComponent* GetStateComponent() const { return StateComponent.Get(); }
+
+	FORCEINLINE UUSCharacterAnimationComponent* GetCharacterAnimationComponent() const { return CharacterAnimationComponent.Get(); }
+
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Component, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UUSCharacterAnimationComponent> CharacterAnimationComponent;
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))

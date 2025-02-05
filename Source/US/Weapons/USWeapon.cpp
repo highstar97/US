@@ -28,7 +28,7 @@ AUSWeapon::AUSWeapon()
 
 void AUSWeapon::Attack()
 {
-	
+
 }
 
 void AUSWeapon::Interact(ACharacter* Interactor)

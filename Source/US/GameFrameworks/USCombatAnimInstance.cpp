@@ -3,6 +3,8 @@
 #include "Characters/USCombatCharacter.h"
 #include "Components/USCombatComponent.h"
 
+#include "GameFramework/CharacterMovementComponent.h"
+
 UUSCombatAnimInstance::UUSCombatAnimInstance()
 {
 	bIsInCombat = false;
@@ -30,5 +32,21 @@ void UUSCombatAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
     if (IsWeaponEquippedQureyResult.IsSet())
     {
         bIsWeaponEquipped = IsWeaponEquippedQureyResult.GetValue();
+    }
+}
+
+void UUSCombatAnimInstance::AnimNotify_CallAttackLogic()
+{
+    if (!CombatComponent.IsValid()) return;
+
+    CombatComponent->Attack();
+}
+
+void UUSCombatAnimInstance::AnimNotify_SetMovementModeWalking()
+{
+    AUSCombatCharacter* OwnerCharacter = Cast<AUSCombatCharacter>(TryGetPawnOwner());
+    if (IsValid(OwnerCharacter))
+    {
+        OwnerCharacter->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
     }
 }

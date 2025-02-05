@@ -25,6 +25,13 @@ public:
     bool GetIsWeaponEquipped() const { return bIsWeaponEquipped; }
 
 private:
+    UFUNCTION()
+    void AnimNotify_CallAttackLogic();
+
+    UFUNCTION()
+    void AnimNotify_SetMovementModeWalking();
+
+private:
     UPROPERTY(EditDefaultsOnly, Category = State, meta = (AllowPrivateAccess = "true"), BlueprintGetter = GetIsInCombat)
     bool bIsInCombat;
 
