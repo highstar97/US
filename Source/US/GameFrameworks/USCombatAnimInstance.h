@@ -4,6 +4,7 @@
 #include "USAnimInstance.h"
 #include "USCombatAnimInstance.generated.h"
 
+class AUSCombatCharacter;
 class UUSCombatComponent;
 
 UCLASS()
@@ -26,10 +27,13 @@ public:
 
 private:
     UFUNCTION()
-    void AnimNotify_CallAttackLogic();
+    void AnimNotify_DisableInput();
 
     UFUNCTION()
-    void AnimNotify_SetMovementModeWalking();
+    void AnimNotify_EnableInput();
+
+    UFUNCTION()
+    void AnimNotify_CallAttackLogic();
 
 private:
     UPROPERTY(EditDefaultsOnly, Category = State, meta = (AllowPrivateAccess = "true"), BlueprintGetter = GetIsInCombat)
@@ -37,6 +41,9 @@ private:
 
     UPROPERTY(EditDefaultsOnly, Category = State, meta = (AllowPrivateAccess = "true"), BlueprintGetter = GetIsWeaponEquipped)
     bool bIsWeaponEquipped;
+
+    UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+    TWeakObjectPtr<AUSCombatCharacter> CombatCharacter;
 
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
     TWeakObjectPtr<UUSCombatComponent> CombatComponent;

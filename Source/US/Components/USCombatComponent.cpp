@@ -20,15 +20,6 @@ TOptional<bool> UUSCombatComponent::GetIsWeaponEquipped() const
     return TOptional<bool>(false);
 }
 
-bool UUSCombatComponent::CanAttack() const
-{
-    TOptional<bool> IsWeaponEquippedQureyResult = GetIsWeaponEquipped();
-
-    if (!IsWeaponEquippedQureyResult.IsSet()) return false;
-    if (IsWeaponEquippedQureyResult.GetValue()) return true;
-    return false;
-}
-
 void UUSCombatComponent::Attack()
 {
     TOptional<bool> IsWeaponEquippedQureyResult = GetIsWeaponEquipped();

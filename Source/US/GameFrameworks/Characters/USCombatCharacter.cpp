@@ -49,10 +49,12 @@ void AUSCombatCharacter::Attack()
 {
     if (!IsValid(CombatComponent) || !IsValid(CharacterAnimationComponent)) return;
 
-    if (CombatComponent->CanAttack())
+    TOptional<bool> IsWeaponEquippedQueryResult = CombatComponent->GetIsWeaponEquipped();
+    if (IsWeaponEquippedQueryResult.IsSet() && IsWeaponEquippedQueryResult.GetValue())
     {
-        GetCharacterMovement()->StopMovementImmediately();
-        GetCharacterMovement()->SetMovementMode(MOVE_None);
-        CharacterAnimationComponent->PlayAttackMontage();
+        if (CharacterAnimationComponent->PlayAttackMontage())
+        {
+            GetCharacterMovement()->StopMovementImmediately();
+        }
     }
 }

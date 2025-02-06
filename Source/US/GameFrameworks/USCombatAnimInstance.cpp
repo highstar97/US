@@ -2,6 +2,7 @@
 
 #include "Characters/USCombatCharacter.h"
 #include "Components/USCombatComponent.h"
+#include "Components/USCharacterAnimationComponent.h"
 
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -14,10 +15,10 @@ void UUSCombatAnimInstance::NativeInitializeAnimation()
 {
     Super::NativeInitializeAnimation();
 
-    AUSCombatCharacter* OwnerCharacter = Cast<AUSCombatCharacter>(TryGetPawnOwner());
-    if (IsValid(OwnerCharacter))
+    CombatCharacter = Cast<AUSCombatCharacter>(TryGetPawnOwner());
+    if (CombatCharacter.Get())
     {
-        CombatComponent = OwnerCharacter->GetCombatComponent();
+        CombatComponent = CombatCharacter->GetCombatComponent();
     }
 }
 
@@ -35,18 +36,35 @@ void UUSCombatAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
     }
 }
 
+void UUSCombatAnimInstance::AnimNotify_DisableInput()
+{
+    if (CombatCharacter.Get())
+    {
+        CombatCharacter->GetCharacterAnimationComponent()->ChangeAttackMontagePriority(EAnimationPriority::UnInterruptedAttack);
+
+        if (APlayerController* PC = Cast<APlayerController>(CombatCharacter->GetController()))
+        {
+            CombatCharacter->DisableInput(PC);
+        }
+    }
+}
+
+void UUSCombatAnimInstance::AnimNotify_EnableInput()
+{
+    if (CombatCharacter.Get())
+    {
+        CombatCharacter->GetCharacterAnimationComponent()->ChangeAttackMontagePriority(EAnimationPriority::Attack);
+
+        if (APlayerController* PC = Cast<APlayerController>(CombatCharacter->GetController()))
+        {
+            CombatCharacter->EnableInput(PC);
+        }
+    }
+}
+
 void UUSCombatAnimInstance::AnimNotify_CallAttackLogic()
 {
     if (!CombatComponent.IsValid()) return;
 
     CombatComponent->Attack();
-}
-
-void UUSCombatAnimInstance::AnimNotify_SetMovementModeWalking()
-{
-    AUSCombatCharacter* OwnerCharacter = Cast<AUSCombatCharacter>(TryGetPawnOwner());
-    if (IsValid(OwnerCharacter))
-    {
-        OwnerCharacter->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
-    }
 }
