@@ -80,10 +80,10 @@ void AUSGun::Attack()
 		{
 			if (AUSCombatCharacter* HitCharacter = Cast<AUSCombatCharacter>(HitActor))
 			{
-				UE_LOG(LogTemp, Warning, TEXT("Hit Character: %s"), *HitCharacter->GetName());
+				UE_LOG(LogTemp, Warning, TEXT("Hit Character(%s) take damage %f"), *HitCharacter->GetName(), InitDamage);
 				DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10.0f, 12, FColor::Green, false, 1.0f);
-				// TODO : Check Damage Logic
-				UGameplayStatics::ApplyDamage(HitCharacter, InitDamage, GetInstigatorController(), this, UDamageType::StaticClass());
+				// TODO : Check Damage Logic, 만약 시전자(OwnerCharacter)에게 버프, 디버프가 있다면 미리 처리
+				UGameplayStatics::ApplyDamage(HitCharacter, InitDamage, GetInstigatorController(), OwnerCharacter.Get(), UDamageType::StaticClass());
 			}
 		}
 	}

@@ -4,10 +4,10 @@
 #include "GameFramework/Character.h"
 #include "USCharacter.generated.h"
 
+class UUSCharacterAnimationComponent;
+class UUSStateComponent;
 class UCameraComponent;
 class USpringArmComponent;
-class UUSStateComponent;
-class UUSCharacterAnimationComponent;
 
 UCLASS(Blueprintable)
 class AUSCharacter : public ACharacter
@@ -31,13 +31,13 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Component, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UUSCharacterAnimationComponent> CharacterAnimationComponent;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Component, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UUSStateComponent> StateComponent;
+
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UCameraComponent> TopDownCameraComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USpringArmComponent> CameraBoom;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Component, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UUSStateComponent> StateComponent;
 };

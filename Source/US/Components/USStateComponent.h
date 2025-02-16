@@ -31,11 +31,15 @@ public:
     UFUNCTION(BlueprintPure, meta = (BlueprintThreadSafe))
     EState GetCurrentState() const { return CurrentState; }
 
+    bool GetIsDead() const { return bIsDead; }
+
     UFUNCTION(BlueprintPure, meta = (BlueprintThreadSafe))
     float GetSpeed() const { return Speed; }
 
     UFUNCTION(BlueprintPure, meta = (BlueprintThreadSafe))
     FVector GetVelocity() const { return Velocity; }
+
+    void SetIsDead(const bool _bIsDead) { bIsDead = _bIsDead; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -48,6 +52,9 @@ protected:
 private:
     UPROPERTY(VisibleAnywhere, Category = State, meta = (AllowPrivateAccess = "true"))
     EState CurrentState;
+
+    UPROPERTY(VisibleAnywhere, Category = State, meta = (AllowPrivateAccess = "true"))
+    bool bIsDead = false;
 
     UPROPERTY(EditDefaultsOnly, Category = State, meta = (AllowPrivateAccess = "true"), BlueprintGetter = GetSpeed)
     float Speed;

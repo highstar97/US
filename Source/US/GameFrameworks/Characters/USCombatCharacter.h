@@ -5,6 +5,9 @@
 #include "USCombatCharacter.generated.h"
 
 class UUSCombatComponent;
+class UUSStatComponent;
+class UWidgetComponent;
+class UCharacterHealthWidget;
 
 UCLASS()
 class US_API AUSCombatCharacter : public AUSCharacter
@@ -18,12 +21,28 @@ public:
 
 	FORCEINLINE UUSCombatComponent* GetCombatComponent() const { return CombatComponent; }
 
+	FORCEINLINE UUSStatComponent* GetStatComponent() const { return StatComponent; }
+
 private:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	UFUNCTION()
+	void HandleDeath();
+
+	float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
 
 	void Attack();
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Component, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UUSCombatComponent> CombatComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Component, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UUSStatComponent> StatComponent;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = UI, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UWidgetComponent> CharacterHealthWidgetComponent;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = UI, meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<UCharacterHealthWidget> CharacterHealthWidgetClass;
 };
