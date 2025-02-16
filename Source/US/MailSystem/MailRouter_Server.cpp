@@ -10,13 +10,6 @@ UMailRouter_Server::UMailRouter_Server()
 {
 	NumOfMails = 0;
 	RoundRobinIndex = 0;
-
-	USGameMode = Cast<AUSGameMode>(GetOuter());
-	if (!USGameMode)
-	{
-		UE_LOG(LogGameMode, Error, TEXT("[UMailRouter_Server::UMailRouter_Server] MailRouter_Server Constructor Can't find Outer."));
-		return;
-	}
 }
 
 void UMailRouter_Server::Tick(float DeltaTime)
@@ -67,6 +60,13 @@ void UMailRouter_Server::Tick(float DeltaTime)
 	}
 }
 
+void UMailRouter_Server::BindGameMode(AUSGameMode* _USGameMode)
+{
+	if (!IsValid(_USGameMode)) return;
+
+	USGameMode = _USGameMode;
+}
+
 void UMailRouter_Server::AddMail(UMailData* MailData)
 {
 	if (!MailData)
@@ -98,11 +98,11 @@ void UMailRouter_Server::AdvanceRoundRobinIndex()
 
 TObjectPtr<UMailSystem> UMailRouter_Server::GetMailSystemOfUser(int32 UserID) const
 {
-	if (!USGameMode || !USGameMode->GetPlayerControllerNumberingMap().Contains(UserID))
+	if (!USGameMode.IsValid() || !USGameMode.Get()->GetPlayerControllerNumberingMap().Contains(UserID))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("[UMailRouter_Server::GetMailSystemOfUser] AddMail received nullptr MailData."));
 		return nullptr;
 	}
 
-	return USGameMode->GetPlayerControllerNumberingMap()[UserID]->GetGameInstance()->GetSubsystem<UMailSystem>();
+	return USGameMode.Get()->GetPlayerControllerNumberingMap()[UserID]->GetGameInstance()->GetSubsystem<UMailSystem>();
 }

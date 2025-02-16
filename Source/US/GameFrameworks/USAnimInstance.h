@@ -20,7 +20,7 @@ public:
 
     virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = State, Meta = (BlueprintThreadSafe))
 	UUSStateComponent* GetStateComponent() const { return StateComponent.Get(); }
 
 protected:

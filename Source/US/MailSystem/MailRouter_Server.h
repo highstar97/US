@@ -25,6 +25,8 @@ public:
 		RETURN_QUICK_DECLARE_CYCLE_STAT(UMailRouter_Server, STATGROUP_Tickables);
 	}
 
+	void BindGameMode(AUSGameMode* _USGameMode);
+
 	void AddMail(UMailData* MailData);
 
 	void AdvanceRoundRobinIndex();
@@ -38,8 +40,7 @@ private:
 
 	int32 RoundRobinIndex;	// 현재 우편을 전송할 차례의 UserID를 가리킴
 
-	UPROPERTY()
-	TObjectPtr<AUSGameMode> USGameMode;
+	TWeakObjectPtr<AUSGameMode> USGameMode;
 
 	TArray<int32> UserIDArray;
 

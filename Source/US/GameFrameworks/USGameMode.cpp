@@ -44,4 +44,5 @@ void AUSGameMode::InitGame(const FString& MapName, const FString& Options, FStri
 	NumOfMap = 0;
 
 	MailRouter_Server = NewObject<UMailRouter_Server>(this);
+	MailRouter_Server->BindGameMode(this);
 }

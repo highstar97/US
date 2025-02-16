@@ -22,6 +22,8 @@ struct FTextData
 	GENERATED_USTRUCT_BODY()
 
 public:
+	FTextData() : Name(FText::FromString(TEXT("Name"))), Description(FText::FromString(TEXT("Description"))), Purpose(FText::FromString(TEXT("Purpose"))) {}
+
 	UPROPERTY(EditAnywhere)
 	FText Name;
 
@@ -38,6 +40,8 @@ struct FNumericData
 	GENERATED_USTRUCT_BODY()
 
 public:
+	FNumericData() : Damage(0.0f), Quantity(0), bIsStackable(false), MaxStackSize(0), InteractionDuration(0.0f) {}
+
 	UPROPERTY(EditAnywhere)
 	float Damage;
 
@@ -60,6 +64,8 @@ struct FWeaponAssetData
 	GENERATED_USTRUCT_BODY()
 
 public:
+	FWeaponAssetData() : Icon(nullptr), Mesh(nullptr) {}
+
 	UPROPERTY(EditAnywhere)
 	UTexture2D* Icon;
 
