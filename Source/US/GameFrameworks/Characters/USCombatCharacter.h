@@ -26,6 +26,14 @@ public:
 private:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	void DelayedBeginPlay();
+
+	void InitCapsuleCollision();
+
+	void InitStatComponent();
+
+	void InitCharacterHealthWidgetComponent();
+
 	UFUNCTION()
 	void HandleDeath();
 

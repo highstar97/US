@@ -1,5 +1,7 @@
 #include "USGameMode.h"
 
+#include "GameDataConfig.h"
+#include "GameStates/USGameState.h"
 #include "Characters/USCharacter.h"
 #include "Controllers/USPlayerController.h"
 #include "MailSystem/MailRouter_Server.h"
@@ -26,6 +28,17 @@ AUSGameMode::AUSGameMode()
 	}
 }
 
+void AUSGameMode::StartPlay()
+{
+	Super::StartPlay();
+
+	AUSGameState* USGameState = GetGameState<AUSGameState>();
+	if (IsValid(USGameState))
+	{
+		USGameState->LoadAllGameDataConfigs();
+	}
+}
+
 void AUSGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
@@ -45,4 +58,13 @@ void AUSGameMode::InitGame(const FString& MapName, const FString& Options, FStri
 
 	MailRouter_Server = NewObject<UMailRouter_Server>(this);
 	MailRouter_Server->BindGameMode(this);
+}
+
+void AUSGameMode::ChangeContent(FName NewContentName)
+{
+    AUSGameState* USGameState = GetGameState<AUSGameState>();
+    if (IsValid(USGameState))
+    {
+        USGameState->SetCurrentGameDataConfig(NewContentName);
+    }
 }

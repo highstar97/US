@@ -1,6 +1,6 @@
 #include "Components/USCharacterAnimationComponent.h"
 
-#include "GameFrameworks/DataValidator.h"
+#include "DataValidator.h"
 #include "Characters/USCharacter.h"
 #include "Characters/USCombatCharacter.h"
 
@@ -43,7 +43,7 @@ void UUSCharacterAnimationComponent::BeginPlay()
     if (AUSCombatCharacter* CombatCharacter = Cast<AUSCombatCharacter>(GetOwner()))
     {
         SkeletalMeshComponent = CombatCharacter->GetMesh();
-        IS_VALID_OR_WARN(SkeletalMeshComponent.Get(), "SkeletalMeshComponent가 유효하지 않음.");
+        IS_VALID_OR_WARN(SkeletalMeshComponent.Get(), TEXT("SkeletalMeshComponent가 유효하지 않음."));
         
         if (IS_VALID_OR_WARN(AttackMontage.Get(), TEXT("Attack Montage가 제대로 할당되지 않음.")))
         {

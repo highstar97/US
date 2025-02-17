@@ -1,26 +1,30 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameModeBase.h"
+#include "GameFramework/GameMode.h"
 #include "USGameMode.generated.h"
 
 class UMailRouter_Server;
 
 UCLASS(minimalapi)
-class AUSGameMode : public AGameModeBase
+class AUSGameMode : public AGameMode
 {
 	GENERATED_BODY()
 
 public:
 	AUSGameMode();
 
+	virtual void StartPlay() override;
+
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 
-	inline TMap<int32, TObjectPtr<APlayerController>> GetPlayerControllerNumberingMap() const { return PlayerControllerNumberingMap; }
+	FORCEINLINE TMap<int32, TObjectPtr<APlayerController>> GetPlayerControllerNumberingMap() const { return PlayerControllerNumberingMap; }
 
-	inline UMailRouter_Server* GetMailRouter_Server() const { return MailRouter_Server.Get(); }
+	FORCEINLINE UMailRouter_Server* GetMailRouter_Server() const { return MailRouter_Server.Get(); }
+
+	void ChangeContent(FName NewContentName);
 
 private:
 	UPROPERTY()

@@ -7,6 +7,9 @@ UUSStateComponent::UUSStateComponent()
 {
     PrimaryComponentTick.bCanEverTick = true;
     CurrentState = EState::IDLE;
+    bIsDead = false;
+    Speed = 0.0f;
+    Velocity = FVector::ZeroVector;
 }
 
 void UUSStateComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

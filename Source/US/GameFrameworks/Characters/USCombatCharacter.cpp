@@ -1,5 +1,7 @@
 #include "USCombatCharacter.h"
 
+#include "DataValidator.h"
+#include "GameStates/USGameState.h"
 #include "Controllers/USPlayerController.h"
 #include "Components/USCombatComponent.h"
 #include "Components/USStatComponent.h"
@@ -31,31 +33,7 @@ void AUSCombatCharacter::BeginPlay()
 {
     Super::BeginPlay();
 
-    if (GetCapsuleComponent())
-    {
-        if (IsPlayerControlled())
-        {
-            GetCapsuleComponent()->SetCollisionProfileName(TEXT("Player"));
-        }
-        else 
-        {
-            GetCapsuleComponent()->SetCollisionProfileName(TEXT("Enemy"));
-        }
-    }
-
-    if (IsValid(CharacterHealthWidgetComponent) && IsValid(CharacterHealthWidgetClass))
-    {
-        CharacterHealthWidgetComponent->SetWidgetClass(CharacterHealthWidgetClass);
-        UCharacterHealthWidget* CharacterHealthWidget = Cast<UCharacterHealthWidget>(CharacterHealthWidgetComponent->GetUserWidgetObject());
-        if (IsValid(CharacterHealthWidget))
-        {
-            if (IsValid(StatComponent))
-            {
-                StatComponent->OnCharacterDeath.AddDynamic(this, &AUSCombatCharacter::HandleDeath);
-                CharacterHealthWidget->BindCharacterStat(StatComponent);
-            }
-        }
-    }
+    GetWorld()->GetTimerManager().SetTimerForNextTick(this, &AUSCombatCharacter::DelayedBeginPlay);
 }
 
 void AUSCombatCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -73,11 +51,59 @@ void AUSCombatCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
     }
 }
 
+void AUSCombatCharacter::DelayedBeginPlay()
+{
+    if (UWorld* World = GetWorld())
+    {
+        AUSGameState* USGameState = World->GetGameState<AUSGameState>();
+        if (IsValid(USGameState) && USGameState->bIsGameDataConfigReady)
+        {
+            InitCapsuleCollision();
+            InitStatComponent();
+            InitCharacterHealthWidgetComponent();
+        }
+        else
+        {
+            GetWorld()->GetTimerManager().SetTimerForNextTick(this, &AUSCombatCharacter::DelayedBeginPlay);
+        }
+    }
+}
+
+void AUSCombatCharacter::InitCapsuleCollision()
+{
+    if (!IS_VALID_OR_EXIT(GetCapsuleComponent(), TEXT("Capsule Compoent가 유효하지 않음."))) return;
+
+    GetCapsuleComponent()->SetCollisionProfileName(IsPlayerControlled() ? TEXT("Player") : TEXT("Enemy"));
+}
+
+void AUSCombatCharacter::InitStatComponent()
+{
+    if (!IS_VALID_OR_EXIT(StatComponent, TEXT("Stat Component가 유효하지 않음."))) return;
+
+    StatComponent->LoadStatsAccordingToLevel();
+    StatComponent->OnCharacterDeath.AddDynamic(this, &AUSCombatCharacter::HandleDeath);
+}
+
+void AUSCombatCharacter::InitCharacterHealthWidgetComponent()
+{
+    if (!IS_VALID_OR_EXIT(CharacterHealthWidgetComponent, TEXT("Character Health Widget Component가 유효하지 않음."))) return;
+    if (!IS_VALID_OR_EXIT(CharacterHealthWidgetClass, TEXT("Character Health Widget Class가 유효하지 않음."))) return;
+
+    CharacterHealthWidgetComponent->SetWidgetClass(CharacterHealthWidgetClass);
+    UCharacterHealthWidget* CharacterHealthWidget = Cast<UCharacterHealthWidget>(CharacterHealthWidgetComponent->GetUserWidgetObject());
+
+    if (IS_VALID_OR_WARN(CharacterHealthWidget, TEXT("Character Health Widget이 유효하지 않음.")))
+    {
+        CharacterHealthWidget->BindCharacterStat(StatComponent);
+    }
+}
+
 void AUSCombatCharacter::HandleDeath()
 {
     if (!IsValid(StateComponent) ||!IsValid(CharacterAnimationComponent)) return;
 
     if (StateComponent->GetIsDead()) return;
+
     StateComponent->SetIsDead(true);
 
     DetachFromControllerPendingDestroy();

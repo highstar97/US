@@ -16,16 +16,34 @@ class US_API UUSStatComponent : public UActorComponent
 public:
 	UUSStatComponent();
 
+	// Getter
+	FORCEINLINE int32 GetLevel() const { return Level; }
+
 	FORCEINLINE float GetMaxHealth() const { return MaxHealth; }
 
 	FORCEINLINE float GetCurrentHealth() const { return CurrentHealth; }
+
+	FORCEINLINE float GetAttack() const { return Attack; }
+
+	FORCEINLINE float GetDefense() const { return Defense; }
+
+	// Setter
+	void SetLevel(const int32 _Level);
 
 	void SetMaxHealth(const float _MaxHealth);
 
 	void SetCurrentHealth(const float _CurrentHealth);
 
-	void TakeDamage(float DamageAmount);
+	void SetAttack(const float _Attack);
 
+	void SetDefense(const float _Defense);
+
+	// Function
+	void LoadStatsAccordingToLevel();
+
+	void TakeDamage(float DamageAmount);
+	
+	// Delegate
 	FOnMaxHealthChanged OnMaxHealthChanged;
 
 	FOnCurrentHealthChanged OnCurrentHealthChanged;
@@ -37,8 +55,17 @@ protected:
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = Stat, meta = (AllowPrivateAccess = "true"))
+	int32 Level; 
+	
+	UPROPERTY(VisibleAnywhere, Category = Stat, meta = (AllowPrivateAccess = "true"))
 	float MaxHealth;
 
 	UPROPERTY(VisibleAnywhere, Category = Stat, meta = (AllowPrivateAccess = "true"))
 	float CurrentHealth;
+
+	UPROPERTY(VisibleAnywhere, Category = Stat, meta = (AllowPrivateAccess = "true"))
+	float Attack;
+
+	UPROPERTY(VisibleAnywhere, Category = Stat, meta = (AllowPrivateAccess = "true"))
+	float Defense;
 };
