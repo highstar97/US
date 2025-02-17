@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
-#include "Weapons/WeaponData.h"
+#include "Weapons/Datas/WeaponData.h"
 #include "WeaponDataAsset.generated.h"
 
 UCLASS()

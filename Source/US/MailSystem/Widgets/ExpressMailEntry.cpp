@@ -1,6 +1,6 @@
 #include "ExpressMailEntry.h"
 
-#include "USGameMode.h"
+#include "GameModes/USGameMode.h"
 #include "MailSystem/MailData.h"
 #include "MailSystem/Widgets/MailDetail.h"
 

@@ -1,6 +1,6 @@
 #include "MailDetail.h"
 
-#include "USGameMode.h"
+#include "GameModes/USGameMode.h"
 
 #include "Components/TextBlock.h"
 #include "Components/Button.h"

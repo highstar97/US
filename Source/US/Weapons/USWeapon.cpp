@@ -1,6 +1,6 @@
 #include "USWeapon.h"
 
-#include "Weapons/WeaponDataAsset.h"
+#include "Weapons/Datas/WeaponDataAsset.h"
 
 #include "GameFramework/Character.h"
 #include "Components/CapsuleComponent.h"

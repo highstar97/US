@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Weapons/WeaponData.h"
+#include "Weapons/Datas/WeaponData.h"
 #include "Interfaces/InteractionInterface.h"
 #include "USWeapon.generated.h"
 

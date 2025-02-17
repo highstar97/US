@@ -1,6 +1,6 @@
 #include "MailSystem.h"
 
-#include "USGameMode.h"
+#include "GameModes/USGameMode.h"
 #include "MailSystem/MailRouter_Server.h"
 #include "MailSystem/MailData.h"
 

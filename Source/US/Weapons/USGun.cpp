@@ -3,7 +3,7 @@
 #include "Characters/USCombatCharacter.h"
 #include "Components/USCombatComponent.h"
 #include "Components/USWeaponComponent.h"
-#include "Weapons/WeaponDataAsset.h"
+#include "Weapons/Datas/WeaponDataAsset.h"
 
 #include "Components/ArrowComponent.h"
 #include "Kismet/GameplayStatics.h"
