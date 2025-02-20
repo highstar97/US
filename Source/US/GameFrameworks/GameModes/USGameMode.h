@@ -14,8 +14,6 @@ class AUSGameMode : public AGameMode
 public:
 	AUSGameMode();
 
-	virtual void StartPlay() override;
-
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
@@ -23,8 +21,6 @@ public:
 	FORCEINLINE TMap<int32, TObjectPtr<APlayerController>> GetPlayerControllerNumberingMap() const { return PlayerControllerNumberingMap; }
 
 	FORCEINLINE UMailRouter_Server* GetMailRouter_Server() const { return MailRouter_Server.Get(); }
-
-	void ChangeContent(FName NewContentName);
 
 private:
 	UPROPERTY()

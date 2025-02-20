@@ -1,7 +1,7 @@
 #include "Components/USStatComponent.h"
 
-#include "GameDataConfig.h"
-#include "GameStates/USGameState.h"
+#include "GlobalDataConfig.h"
+#include "GameInstances/USGameInstance.h"
 #include "Characters/USCombatCharacter.h"
 #include "Characters/Datas/CharacterStat.h"
 
@@ -47,13 +47,13 @@ void UUSStatComponent::LoadStatsAccordingToLevel()
 {
 	if (UWorld* World = GetWorld())
 	{
-		AUSGameState* GameState = World->GetGameState<AUSGameState>();
-		if (!IsValid(GameState)) return;
+		UUSGameInstance* USGameInstance = Cast<UUSGameInstance>(World->GetGameInstance());
+		if (!IsValid(USGameInstance)) return;
 
-		UGameDataConfig* CurrentGameDataConfig = GameState->GetCurrentGameDataConfig();
-		if (!IsValid(CurrentGameDataConfig)) return;
+		UGlobalDataConfig* CurrenGlobalDataConfig = USGameInstance->GetGlobalDataConfig();
+		if (!IsValid(CurrenGlobalDataConfig)) return;
 
-		UDataTable* StatTable = CurrentGameDataConfig->GetCharacterStatTable();
+		UDataTable* StatTable = CurrenGlobalDataConfig->GetCharacterStatTable();
 		if (IsValid(StatTable))
 		{
 			FCharacterStat* Stat = StatTable->FindRow<FCharacterStat>(*FString::FromInt(Level), "");

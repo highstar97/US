@@ -2,11 +2,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameState.h"
-#include "Engine/DataTable.h"
-#include "AssetRegistry/AssetRegistryModule.h"
 #include "USGameState.generated.h"
 
-class UGameDataConfig;
+class ULevelDataConfig;
+class ULevelLoadingWidget;
 
 UCLASS()
 class US_API AUSGameState : public AGameState
@@ -19,26 +18,19 @@ public:
 	virtual void BeginPlay() override;
 
 	// Getter, Setter
+	FORCEINLINE ULevelDataConfig* GetLevelDataConfig() const { return LevelDataConfig.Get(); }
 
-	FORCEINLINE TMap<FName, TObjectPtr<UGameDataConfig>> GetGameDataConfigs() const { return GameDataConfigs; }
+	FORCEINLINE ULevelLoadingWidget* GetLevelLoadingWidget() const { return LevelLoadingWidget.Get(); }
 
-	FORCEINLINE UGameDataConfig* GetCurrentGameDataConfig() const { return CurrentGameDataConfig.Get(); }
-
-	void SetCurrentGameDataConfig(FName ContentName);
-
-	// Functions
-	
-	// Asset Registry Module을 이용하여 게임에 필요한 모든 GameDataConfigs 가져오기.
-	void LoadAllGameDataConfigs();
-
-	bool bIsGameDataConfigReady = false;
+	void HideLevelLoadingWidget();
 
 private:
-	// Contents별 GameDataConfig 모음
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = GameConfig, meta = (AllowPrivateAccess = "true"))
-	TMap<FName, TObjectPtr<UGameDataConfig>> GameDataConfigs;
+	UPROPERTY(EditAnywhere, Category = "Game Config", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<ULevelDataConfig> LevelDataConfig;
 
-	// 현재 Content의 GameDataConfig
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = GameConfig, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UGameDataConfig> CurrentGameDataConfig;
+	UPROPERTY(EditDefaultsOnly, Category = UI, meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<ULevelLoadingWidget> LevelLoadingWidgetClass;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = UI, meta = (AllowPrivateAccess = "true"))
+	TWeakObjectPtr<ULevelLoadingWidget> LevelLoadingWidget;
 };

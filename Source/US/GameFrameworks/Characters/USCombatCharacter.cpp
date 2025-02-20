@@ -56,11 +56,12 @@ void AUSCombatCharacter::DelayedBeginPlay()
     if (UWorld* World = GetWorld())
     {
         AUSGameState* USGameState = World->GetGameState<AUSGameState>();
-        if (IsValid(USGameState) && USGameState->bIsGameDataConfigReady)
+        if (IsValid(USGameState))
         {
             InitCapsuleCollision();
             InitStatComponent();
             InitCharacterHealthWidgetComponent();
+            USGameState->HideLevelLoadingWidget();
         }
         else
         {
