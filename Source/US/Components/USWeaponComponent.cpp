@@ -1,5 +1,6 @@
 #include "USWeaponComponent.h"
 
+#include "DataValidator.h"
 #include "Characters/USCombatCharacter.h"
 #include "Weapons/USWeapon.h"
 
@@ -7,7 +8,6 @@ UUSWeaponComponent::UUSWeaponComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
 }
-
 
 void UUSWeaponComponent::EquipWeapon(AUSWeapon* NewWeapon)
 {
@@ -53,4 +53,14 @@ void UUSWeaponComponent::UseWeapon()
 void UUSWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (!IS_VALID_OR_EXIT(DefaultWeaponClass, TEXT("Default Weapon Class가 유효하지 않습니다."))) return;
+
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = GetOwner();
+	SpawnParams.Instigator = GetOwner()->GetInstigator();
+	AUSWeapon* SpawnedWeapon = GetWorld()->SpawnActor<AUSWeapon>(DefaultWeaponClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
+	if (!SpawnedWeapon) return;
+
+	SpawnedWeapon->Interact(Cast<AUSCombatCharacter>(GetOwner()));
 }

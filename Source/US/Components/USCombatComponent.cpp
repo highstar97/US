@@ -1,6 +1,7 @@
 #include "Components/USCombatComponent.h"
 
 #include "Components/USWeaponComponent.h"
+#include "Weapons/USWeapon.h"
 
 UUSCombatComponent::UUSCombatComponent()
 {

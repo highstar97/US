@@ -3,6 +3,7 @@
 #include "DataValidator.h"
 #include "GameStates/USGameState.h"
 #include "Controllers/USPlayerController.h"
+#include "Controllers/USAIController.h"
 #include "Components/USCombatComponent.h"
 #include "Components/USStatComponent.h"
 #include "Components/USStateComponent.h"
@@ -14,7 +15,8 @@
 #include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
-AUSCombatCharacter::AUSCombatCharacter()
+AUSCombatCharacter::AUSCombatCharacter(const FObjectInitializer& ObjectInitializer)
+    : Super(ObjectInitializer)
 {
     CombatComponent = CreateDefaultSubobject<UUSCombatComponent>(TEXT("CombatComponent"));
 
@@ -27,6 +29,12 @@ AUSCombatCharacter::AUSCombatCharacter()
     CharacterHealthWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
     CharacterHealthWidgetComponent->SetDrawSize(FVector2D(100.0f, 10.0f));
     CharacterHealthWidgetComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+    bUseControllerRotationYaw = true;
+
+    GetCharacterMovement()->MaxWalkSpeed = 300.0f;
+
+    AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
 void AUSCombatCharacter::BeginPlay()
@@ -34,6 +42,20 @@ void AUSCombatCharacter::BeginPlay()
     Super::BeginPlay();
 
     GetWorld()->GetTimerManager().SetTimerForNextTick(this, &AUSCombatCharacter::DelayedBeginPlay);
+}
+
+void AUSCombatCharacter::Attack()
+{
+    if (!IsValid(CombatComponent) || !IsValid(CharacterAnimationComponent)) return;
+
+    TOptional<bool> IsWeaponEquippedQueryResult = CombatComponent->GetIsWeaponEquipped();
+    if (IsWeaponEquippedQueryResult.IsSet() && IsWeaponEquippedQueryResult.GetValue())
+    {
+        if (CharacterAnimationComponent->PlayAttackMontage())
+        {
+            GetCharacterMovement()->StopMovementImmediately();
+        }
+    }
 }
 
 void AUSCombatCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -129,18 +151,4 @@ float AUSCombatCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dam
     StatComponent->TakeDamage(FinalDamage);
 
     return FinalDamage;
-}
-
-void AUSCombatCharacter::Attack()
-{
-    if (!IsValid(CombatComponent) || !IsValid(CharacterAnimationComponent)) return;
-
-    TOptional<bool> IsWeaponEquippedQueryResult = CombatComponent->GetIsWeaponEquipped();
-    if (IsWeaponEquippedQueryResult.IsSet() && IsWeaponEquippedQueryResult.GetValue())
-    {
-        if (CharacterAnimationComponent->PlayAttackMontage())
-        {
-            GetCharacterMovement()->StopMovementImmediately();
-        }
-    }
 }

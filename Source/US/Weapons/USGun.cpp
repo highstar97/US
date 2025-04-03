@@ -25,6 +25,7 @@ void AUSGun::Attack()
 	if (!IsValid(WeaponDataAsset)) return;
 
 	float InitDamage = WeaponDataAsset->NumericData.Damage;
+	float InitRange = WeaponDataAsset->NumericData.Range;
 	UE_LOG(LogTemp, Warning, TEXT("%s Attack!"), *this->GetActorLabel());
 
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
@@ -60,8 +61,7 @@ void AUSGun::Attack()
 
 	// Ray Trace
 	FVector TraceStart = ArrowComponent->GetComponentLocation();
-	const float TraceDistance = 10000.0f;
-	FVector TraceEnd = TraceStart + (OwnerCharacter->GetActorForwardVector() * TraceDistance);
+	FVector TraceEnd = TraceStart + (OwnerCharacter->GetActorForwardVector() * InitRange);
 
 	HitResult.Reset();
 	FCollisionQueryParams QueryParams;

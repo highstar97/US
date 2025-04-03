@@ -36,10 +36,10 @@ private:
     void AnimNotify_CallAttackLogic();
 
 private:
-    UPROPERTY(EditDefaultsOnly, Category = State, meta = (AllowPrivateAccess = "true"), BlueprintGetter = GetIsInCombat)
+    UPROPERTY(VisibleDefaultsOnly, Category = State, meta = (AllowPrivateAccess = "true"), BlueprintGetter = GetIsInCombat)
     bool bIsInCombat;
 
-    UPROPERTY(EditDefaultsOnly, Category = State, meta = (AllowPrivateAccess = "true"), BlueprintGetter = GetIsWeaponEquipped)
+    UPROPERTY(VisibleDefaultsOnly, Category = State, meta = (AllowPrivateAccess = "true"), BlueprintGetter = GetIsWeaponEquipped)
     bool bIsWeaponEquipped;
 
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))

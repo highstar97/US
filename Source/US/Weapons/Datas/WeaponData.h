@@ -40,10 +40,13 @@ struct FNumericData
 	GENERATED_USTRUCT_BODY()
 
 public:
-	FNumericData() : Damage(0.0f), Quantity(0), bIsStackable(false), MaxStackSize(0), InteractionDuration(0.0f) {}
+	FNumericData() : Damage(0.0f), Range(0.0f), Quantity(0), bIsStackable(false), MaxStackSize(0), InteractionDuration(0.0f) {}
 
 	UPROPERTY(EditAnywhere)
 	float Damage;
+
+	UPROPERTY(EditAnywhere)
+	float Range;
 
 	UPROPERTY(EditAnywhere)
 	int32 Quantity;

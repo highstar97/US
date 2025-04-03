@@ -23,22 +23,24 @@ public:
 
 	virtual void Interact(ACharacter* Interactor) override;
 
+	float GetRange() const;
+
 protected:
 	virtual void BeginPlay() override;
 
 	virtual void OnConstruction(const FTransform& Transform) override;
 
 protected:
-	UPROPERTY(Category = Weapon, EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UCapsuleComponent> InteractionCapsuleComponent;
 
-	UPROPERTY(Category = Weapon, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Weapon, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UStaticMeshComponent> WeaponMesh;
 
-	UPROPERTY(Category = Weapon, EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UPostProcessComponent> PostProcessComponent;
 
-	UPROPERTY(Category = Weapon, EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UWeaponDataAsset> WeaponDataAsset;
 
 	TWeakObjectPtr<ACharacter> OwnerCharacter;

@@ -25,7 +25,10 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-private:	
-	UPROPERTY()
+private:
+	UPROPERTY(EditDefaultsOnly, Category = Weapon, meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<AUSWeapon> DefaultWeaponClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = Weapon, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<AUSWeapon> EquippedWeapon;
 };

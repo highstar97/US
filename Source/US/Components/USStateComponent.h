@@ -50,15 +50,15 @@ protected:
     TWeakObjectPtr<UCharacterMovementComponent> MovementComponent;
 
 private:
-    UPROPERTY(VisibleAnywhere, Category = State, meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = State, meta = (AllowPrivateAccess = "true"))
     EState CurrentState;
 
-    UPROPERTY(VisibleAnywhere, Category = State, meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = State, meta = (AllowPrivateAccess = "true"))
     bool bIsDead = false;
 
-    UPROPERTY(EditDefaultsOnly, Category = State, meta = (AllowPrivateAccess = "true"), BlueprintGetter = GetSpeed)
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = State, meta = (AllowPrivateAccess = "true"), BlueprintGetter = GetSpeed)
     float Speed;
 
-    UPROPERTY(EditDefaultsOnly, Category = State, meta = (AllowPrivateAccess = "true"), BlueprintGetter = GetVelocity)
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = State, meta = (AllowPrivateAccess = "true"), BlueprintGetter = GetVelocity)
     FVector Velocity;
 };

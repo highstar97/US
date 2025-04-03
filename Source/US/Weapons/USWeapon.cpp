@@ -38,6 +38,11 @@ void AUSWeapon::Interact(ACharacter* Interactor)
 	OwnerCharacter = Interactor;
 }
 
+float AUSWeapon::GetRange() const
+{
+	return IsValid(WeaponDataAsset) ? WeaponDataAsset->NumericData.Range : 0.0f;
+}
+
 void AUSWeapon::BeginPlay()
 {
 	Super::BeginPlay();
