@@ -15,8 +15,6 @@ class AUSCharacter : public ACharacter
 public:
 	AUSCharacter(const FObjectInitializer& ObjectInitializer);
 
-	virtual void Tick(float DeltaSeconds) override;
-
 	FORCEINLINE UUSStateComponent* GetStateComponent() const { return StateComponent.Get(); }
 
 	FORCEINLINE UUSCharacterAnimationComponent* GetCharacterAnimationComponent() const { return CharacterAnimationComponent.Get(); }

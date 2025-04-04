@@ -4,7 +4,8 @@
 #include "Weapons/USWeapon.h"
 #include "USGun.generated.h"
 
-class UArrowComponent;
+class AUSProjectilePool;
+class UProjectileDataAsset;
 
 UCLASS()
 class US_API AUSGun : public AUSWeapon
@@ -19,6 +20,6 @@ public:
 	virtual void Interact(ACharacter* Interactor) override;
 
 private:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Component, meta = (AllowPrivateAccess = "true"))
-	UArrowComponent* ArrowComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Weapon | Projectile", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UProjectileDataAsset> ProjectileDataAsset;
 };

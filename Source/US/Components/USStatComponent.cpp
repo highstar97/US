@@ -14,6 +14,7 @@ UUSStatComponent::UUSStatComponent()
 	CurrentHealth = MaxHealth;
 	Attack = 0.0f;
 	Defense = 0.0f;
+	AttackSpeed = 0.0f;
 }
 
 void UUSStatComponent::SetLevel(const int32 _Level)
@@ -43,6 +44,11 @@ void UUSStatComponent::SetDefense(const float _Defense)
 	Defense = _Defense;
 }
 
+void UUSStatComponent::SetAttackSpeed(const float _AttackSpeed)
+{
+	AttackSpeed = _AttackSpeed;
+}
+
 void UUSStatComponent::LoadStatsAccordingToLevel()
 {
 	if (UWorld* World = GetWorld())
@@ -63,6 +69,7 @@ void UUSStatComponent::LoadStatsAccordingToLevel()
 				SetCurrentHealth(GetMaxHealth());
 				SetAttack(Stat->Attack);
 				SetDefense(Stat->Defense);
+				SetAttackSpeed(Stat->AttackSpeed);
 			}
 		}
 	}

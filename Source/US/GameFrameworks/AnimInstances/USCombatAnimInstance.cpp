@@ -66,5 +66,5 @@ void UUSCombatAnimInstance::AnimNotify_CallAttackLogic()
 {
     if (!CombatComponent.IsValid()) return;
 
-    CombatComponent->Attack();
+    //CombatComponent->Attack();
 }

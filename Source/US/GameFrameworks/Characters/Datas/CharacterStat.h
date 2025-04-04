@@ -10,7 +10,7 @@ struct FCharacterStat : public FTableRowBase
     GENERATED_BODY()
 
 public:
-    FCharacterStat() : Level(1), MaxHealth(100.0f), Attack(10.0f), Defense(5.0f) {}
+    FCharacterStat() : Level(1), MaxHealth(100.0f), Attack(10.0f), Defense(5.0f), AttackSpeed(0.5f) {}
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
     int32 Level;
@@ -23,4 +23,7 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
     float Defense;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Stat)
+    float AttackSpeed;
 };

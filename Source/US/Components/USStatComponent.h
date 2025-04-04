@@ -27,6 +27,8 @@ public:
 
 	FORCEINLINE float GetDefense() const { return Defense; }
 
+	FORCEINLINE float GetAttackSpeed() const { return AttackSpeed; }
+
 	// Setter
 	void SetLevel(const int32 _Level);
 
@@ -37,6 +39,8 @@ public:
 	void SetAttack(const float _Attack);
 
 	void SetDefense(const float _Defense);
+
+	void SetAttackSpeed(const float _AttackSpeed);
 
 	// Function
 	void LoadStatsAccordingToLevel();
@@ -68,4 +72,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = Stat, meta = (AllowPrivateAccess = "true"))
 	float Defense;
+
+	UPROPERTY(VisibleAnywhere, Category = Stat, meta = (AllowPrivateAccess = "true"))
+	float AttackSpeed;
 };

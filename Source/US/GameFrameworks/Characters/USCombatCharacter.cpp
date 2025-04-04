@@ -2,11 +2,10 @@
 
 #include "DataValidator.h"
 #include "GameStates/USGameState.h"
-#include "Controllers/USPlayerController.h"
-#include "Controllers/USAIController.h"
 #include "Components/USCombatComponent.h"
 #include "Components/USStatComponent.h"
 #include "Components/USStateComponent.h"
+#include "Components/USWeaponComponent.h"
 #include "Components/USCharacterAnimationComponent.h"
 #include "UI/CharacterHealthWidget.h"
 
@@ -29,10 +28,6 @@ AUSCombatCharacter::AUSCombatCharacter(const FObjectInitializer& ObjectInitializ
     CharacterHealthWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
     CharacterHealthWidgetComponent->SetDrawSize(FVector2D(100.0f, 10.0f));
     CharacterHealthWidgetComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-    GetCharacterMovement()->MaxWalkSpeed = 100.0f;
-
-    AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
 void AUSCombatCharacter::BeginPlay()
@@ -44,6 +39,7 @@ void AUSCombatCharacter::BeginPlay()
 
 void AUSCombatCharacter::Attack()
 {
+    // Play Animation
     if (!IsValid(CombatComponent) || !IsValid(CharacterAnimationComponent)) return;
 
     TOptional<bool> IsWeaponEquippedQueryResult = CombatComponent->GetIsWeaponEquipped();
@@ -52,6 +48,8 @@ void AUSCombatCharacter::Attack()
         if (CharacterAnimationComponent->PlayAttackMontage())
         {
             GetCharacterMovement()->StopMovementImmediately();
+            // 무기 공격
+            CombatComponent->GetWeaponComponent()->UseWeapon();
         }
     }
 }

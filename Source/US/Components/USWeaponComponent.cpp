@@ -61,6 +61,6 @@ void UUSWeaponComponent::BeginPlay()
 	SpawnParams.Instigator = GetOwner()->GetInstigator();
 	AUSWeapon* SpawnedWeapon = GetWorld()->SpawnActor<AUSWeapon>(DefaultWeaponClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
 	if (!SpawnedWeapon) return;
-
+		
 	SpawnedWeapon->Interact(Cast<AUSCombatCharacter>(GetOwner()));
 }

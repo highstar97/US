@@ -33,12 +33,5 @@ AUSCharacter::AUSCharacter(const FObjectInitializer& ObjectInitializer)
 
 	CharacterAnimationComponent = CreateDefaultSubobject<UUSCharacterAnimationComponent>(TEXT("Character Animation Component"));
 
-	// Activate ticking in order to update the cursor every frame.
-	PrimaryActorTick.bCanEverTick = true;
-	PrimaryActorTick.bStartWithTickEnabled = true;
-}
-
-void AUSCharacter::Tick(float DeltaSeconds)
-{
-    Super::Tick(DeltaSeconds);
+	PrimaryActorTick.bCanEverTick = false;
 }
