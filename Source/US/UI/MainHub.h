@@ -5,6 +5,7 @@
 #include "MainHub.generated.h"
 
 class UInteractionWidget;
+class UCrosshairWidget;
 class UExpressMailBox;
 class UButton;
 class UImage;
@@ -17,9 +18,13 @@ class US_API UMainHub : public UUserWidget
 public:
     UMainHub(const FObjectInitializer& ObjectInitializer);
 
+    virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+
     virtual void NativeConstruct() override;
 
     FORCEINLINE UInteractionWidget* GetInteractionWidget() const { return InteractionWidget.Get(); }
+
+    FORCEINLINE UCrosshairWidget* GetCrosshairWidget() const { return CrosshairWidget.Get(); }
 
     FORCEINLINE UExpressMailBox* GetExpressMailBox() const { return ExpressMailBox.Get(); }
 
@@ -29,6 +34,10 @@ private:
     /** WBP_InteractionWidget Instance */
     UPROPERTY(VisibleInstanceOnly, Category = UI, meta = (BindWidget))
     TObjectPtr<UInteractionWidget> InteractionWidget;
+
+    /** WBP_CrosshairWidget Instance */
+    UPROPERTY(VisibleInstanceOnly, Category = UI, meta = (BindWidget))
+    TObjectPtr<UCrosshairWidget> CrosshairWidget;
 
     /** WBP_ExpressMailBox Instance */
     UPROPERTY(VisibleInstanceOnly, Category = UI, meta = (BindWidget))

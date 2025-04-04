@@ -10,8 +10,7 @@
 	
 AUSPlayerController::AUSPlayerController()
 {
-	bShowMouseCursor = true;
-	DefaultMouseCursor = EMouseCursor::Default;
+	bShowMouseCursor = false;
 
 	// Create a InteractionComponent...
 	InteractionComponent = CreateDefaultSubobject<UUSInteractionComponent>(TEXT("InteractionComponent"));
