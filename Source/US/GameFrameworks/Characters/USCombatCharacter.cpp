@@ -30,9 +30,7 @@ AUSCombatCharacter::AUSCombatCharacter(const FObjectInitializer& ObjectInitializ
     CharacterHealthWidgetComponent->SetDrawSize(FVector2D(100.0f, 10.0f));
     CharacterHealthWidgetComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-    bUseControllerRotationYaw = true;
-
-    GetCharacterMovement()->MaxWalkSpeed = 300.0f;
+    GetCharacterMovement()->MaxWalkSpeed = 100.0f;
 
     AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
@@ -54,21 +52,6 @@ void AUSCombatCharacter::Attack()
         if (CharacterAnimationComponent->PlayAttackMontage())
         {
             GetCharacterMovement()->StopMovementImmediately();
-        }
-    }
-}
-
-void AUSCombatCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-    Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-    AUSPlayerController* PlayerController = Cast<AUSPlayerController>(GetController());
-    if (IsValid(PlayerController))
-    {
-        UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
-        if (IsValid(EnhancedInputComponent) && IsValid(PlayerController->AttackAction))
-        {
-            EnhancedInputComponent->BindAction(PlayerController->AttackAction, ETriggerEvent::Started, this, &AUSCombatCharacter::Attack);
         }
     }
 }

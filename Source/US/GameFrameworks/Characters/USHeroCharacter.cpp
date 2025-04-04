@@ -20,7 +20,5 @@ AUSHeroCharacter::AUSHeroCharacter(const FObjectInitializer& ObjectInitializer)
 	TopDownCameraComponent->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	TopDownCameraComponent->bUsePawnControlRotation = false;		// Camera does not rotate relative to arm
 
-	bUseControllerRotationYaw = false;
-
-	GetCharacterMovement()->MaxWalkSpeed = 600.0f;
+	GetCharacterMovement()->MaxWalkSpeed = 300.0f;
 }

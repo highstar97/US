@@ -4,21 +4,14 @@
 #include "Components/USInteractionComponent.h"
 #include "UI/MainHub.h"
 
-#include "GameFramework/Pawn.h"
-#include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "Blueprint/UserWidget.h"
-#include "NiagaraSystem.h"
-#include "NiagaraFunctionLibrary.h"
-#include "Engine/World.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-
+	
 AUSPlayerController::AUSPlayerController()
 {
 	bShowMouseCursor = true;
 	DefaultMouseCursor = EMouseCursor::Default;
-	CachedDestination = FVector::ZeroVector;
-	FollowTime = 0.f;
 
 	// Create a InteractionComponent...
 	InteractionComponent = CreateDefaultSubobject<UUSInteractionComponent>(TEXT("InteractionComponent"));
@@ -35,6 +28,8 @@ void AUSPlayerController::BeginPlay()
 		Subsystem->AddMappingContext(DefaultMappingContext, 0);
 	}
 
+	// TODO : Create Mouse Cursor Widget
+
 	// Create MailHubWidget
 	if(IsValid(MainHubWidgetClass))
 	{
@@ -48,7 +43,6 @@ void AUSPlayerController::BeginPlay()
 
 void AUSPlayerController::SetupInputComponent()
 {
-	// set up gameplay key bindings
 	Super::SetupInputComponent();
 
 	// Set up action bindings
@@ -56,18 +50,16 @@ void AUSPlayerController::SetupInputComponent()
 	{
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &AUSPlayerController::OnInteractStarted);
 
-		// Setup mouse input events
-		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Started, this, &AUSPlayerController::OnInputStarted);
-		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Triggered, this, &AUSPlayerController::OnSetDestinationTriggered);
-		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Completed, this, &AUSPlayerController::OnSetDestinationReleased);
-		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Canceled, this, &AUSPlayerController::OnSetDestinationReleased);
-
-		// Setup touch input events
-		EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Started, this, &AUSPlayerController::OnInputStarted);
-		EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Triggered, this, &AUSPlayerController::OnTouchTriggered);
-		EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Completed, this, &AUSPlayerController::OnTouchReleased);
-		EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Canceled, this, &AUSPlayerController::OnTouchReleased);
+		// Setup move input events
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AUSPlayerController::Move);
 	}
+}
+
+void AUSPlayerController::PlayerTick(float DeltaTime)
+{
+	Super::PlayerTick(DeltaTime);
+
+	UpdateLookToMouse(DeltaTime);
 }
 
 void AUSPlayerController::OnInteractStarted()
@@ -77,66 +69,34 @@ void AUSPlayerController::OnInteractStarted()
 	GetInteractionComponent()->HandleInteract();
 }
 
-void AUSPlayerController::OnInputStarted()
+void AUSPlayerController::Move(const FInputActionValue& Value)
 {
-	StopMovement();
+	AUSCharacter* USCharacter = Cast<AUSCharacter>(GetCharacter());
+
+	if (!IsValid(USCharacter)) return;
+
+	FVector2D MoveVector = Value.Get<FVector2D>();
+	USCharacter->AddMovementInput(FVector::ForwardVector, MoveVector.Y);
+	USCharacter->AddMovementInput(FVector::RightVector, MoveVector.X);
 }
 
-// Triggered every frame when the input is held down
-void AUSPlayerController::OnSetDestinationTriggered()
+void AUSPlayerController::UpdateLookToMouse(float DeltaTime)
 {
-	// We flag that the input is being pressed
-	FollowTime += GetWorld()->GetDeltaSeconds();
+	AUSCharacter* USCharacter = Cast<AUSCharacter>(GetCharacter());
 	
-	// We look for the location in the world where the player has pressed the input
-	FHitResult Hit;
-	bool bHitSuccessful = false;
-	if (bIsTouch)
-	{
-		bHitSuccessful = GetHitResultUnderFinger(ETouchIndex::Touch1, ECollisionChannel::ECC_Visibility, true, Hit);
-	}
-	else
-	{
-		bHitSuccessful = GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, Hit);
-	}
+	if (!IsValid(USCharacter)) return;
 
-	// If we hit a surface, cache the location
-	if (bHitSuccessful)
+	FVector WorldPosition , WorldDirection;
+	if (DeprojectMousePositionToWorld(WorldPosition, WorldDirection))
 	{
-		CachedDestination = Hit.Location;
+		FVector ActorLocation = USCharacter->GetActorLocation();
+		FVector TargetPoint = WorldPosition + WorldDirection * 1000.f;
+		FVector LookDirection = (TargetPoint - ActorLocation).GetSafeNormal2D();
+		if (!LookDirection.IsNearlyZero())
+		{
+			FRotator TargetRotation = LookDirection.Rotation();
+			FRotator NewRotation = FMath::RInterpTo(USCharacter->GetActorRotation(), TargetRotation, DeltaTime, 10.0f);
+			USCharacter->SetActorRotation(NewRotation);
+		}
 	}
-	
-	// Move towards mouse pointer or touch
-	APawn* ControlledPawn = GetPawn();
-	if (ControlledPawn != nullptr)
-	{
-		FVector WorldDirection = (CachedDestination - ControlledPawn->GetActorLocation()).GetSafeNormal();
-		ControlledPawn->AddMovementInput(WorldDirection, 1.0, false);
-	}
-}
-
-void AUSPlayerController::OnSetDestinationReleased()
-{
-	// If it was a short press
-	if (FollowTime <= ShortPressThreshold)
-	{
-		// We move there and spawn some particles
-		UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, CachedDestination);
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, FXCursor, CachedDestination, FRotator::ZeroRotator, FVector(1.f, 1.f, 1.f), true, true, ENCPoolMethod::None, true);
-	}
-
-	FollowTime = 0.f;
-}
-
-// Triggered every frame when the input is held down
-void AUSPlayerController::OnTouchTriggered()
-{
-	bIsTouch = true;
-	OnSetDestinationTriggered();
-}
-
-void AUSPlayerController::OnTouchReleased()
-{
-	bIsTouch = false;
-	OnSetDestinationReleased();
 }

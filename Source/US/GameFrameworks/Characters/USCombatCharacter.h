@@ -26,8 +26,6 @@ public:
 	void Attack();
 
 private:
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
 	void DelayedBeginPlay();
 
 	void InitCapsuleCollision();
