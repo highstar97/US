@@ -5,16 +5,20 @@
 AUSProjectilePool::AUSProjectilePool()
 {
 	PrimaryActorTick.bCanEverTick = false;
+    
+    PoolSize = 20;
 }
 
-void AUSProjectilePool::BeginPlay()
+void AUSProjectilePool::Init(const UProjectileDataAsset* _ProjectileDataAsset)
 {
-	Super::BeginPlay();
+    ProjectileDataAsset = _ProjectileDataAsset;
+
+    ResizePool(0, PoolSize);
 }
 
 AUSProjectile* AUSProjectilePool::GetAvailableProjectile()
 {
-    for (AUSProjectile* Projectile : Pool)
+    for (AUSProjectile* Projectile : Projectiles)
     {
         if (!Projectile->GetIsActive())
         {
@@ -26,26 +30,19 @@ AUSProjectile* AUSProjectilePool::GetAvailableProjectile()
     return GetAvailableProjectile();
 }
 
-void AUSProjectilePool::InitProjectiles(UProjectileDataAsset* _ProjectileDataAsset)
-{
-    ProjectileDataAsset = _ProjectileDataAsset;
-
-    ResizePool(0, PoolSize);
-}
-
 bool AUSProjectilePool::ResizePool(int32 CurrentPoolSize, int32 NewPoolSize)
 {
     if (CurrentPoolSize >= NewPoolSize) return false;
     PoolSize = NewPoolSize;
 
-    Pool.Reserve(NewPoolSize);
+    Projectiles.Reserve(NewPoolSize);
     for (int32 i = CurrentPoolSize; i < NewPoolSize; ++i)
     {
         AUSProjectile* NewProjectile = GetWorld()->SpawnActor<AUSProjectile>(AUSProjectile::StaticClass());
         if (NewProjectile)
         {
-            NewProjectile->InitProjectile(ProjectileDataAsset);
-            Pool.Add(NewProjectile);
+            NewProjectile->Init(ProjectileDataAsset);
+            Projectiles.Add(NewProjectile);
         }
     }
     return true;

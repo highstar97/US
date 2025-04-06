@@ -19,7 +19,7 @@ EBTNodeResult::Type UBTTask_AttakTarget::ExecuteTask(UBehaviorTreeComponent& Own
     AUSCombatCharacter* Self = Cast<AUSCombatCharacter>(Controller->GetCharacter());
     AUSCombatCharacter* Target = Cast<AUSCombatCharacter>(Blackboard->GetValueAsObject("TargetActor"));
 
-    if (!Self || !Target) return EBTNodeResult::Failed;
+    if (!IsValid(Self) || !IsValid(Target)) return EBTNodeResult::Failed;
 
     Self->Attack();
 

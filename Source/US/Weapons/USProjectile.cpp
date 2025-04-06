@@ -8,6 +8,9 @@ AUSProjectile::AUSProjectile()
 
     MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh Component"));
     RootComponent = MeshComponent;
+    bIsActive = false;
+    ElapsedTime = 0.0f;
+
     SetActorTickEnabled(false);
 }
 
@@ -26,7 +29,7 @@ void AUSProjectile::Tick(float DeltaTime)
     }
 }
 
-void AUSProjectile::InitProjectile(const UProjectileDataAsset* _ProjectileDataAsset)
+void AUSProjectile::Init(const UProjectileDataAsset* _ProjectileDataAsset)
 {
     ProjectileDataAsset = _ProjectileDataAsset;
 
@@ -62,9 +65,4 @@ void AUSProjectile::DeactivateProjectile()
     SetActorHiddenInGame(true);
     SetActorEnableCollision(false);
     SetActorTickEnabled(false);
-}
-
-void AUSProjectile::BeginPlay()
-{
-	Super::BeginPlay();
 }

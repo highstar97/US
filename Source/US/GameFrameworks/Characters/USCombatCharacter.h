@@ -6,6 +6,7 @@
 
 class UUSCombatComponent;
 class UUSStatComponent;
+class AUSWeapon;
 class UWidgetComponent;
 class UCharacterHealthWidget;
 
@@ -22,6 +23,10 @@ public:
 	FORCEINLINE UUSCombatComponent* GetCombatComponent() const { return CombatComponent; }
 
 	FORCEINLINE UUSStatComponent* GetStatComponent() const { return StatComponent; }
+
+	AUSWeapon* GetEquippedWeapon() const;
+
+	void EquipWeapon(AUSWeapon* NewWeapon);
 
 	void Attack();
 
@@ -40,15 +45,15 @@ private:
 	float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
 
 private:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Component, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MyVariable | Component ", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UUSCombatComponent> CombatComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Component, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MyVariable | Component ", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UUSStatComponent> StatComponent;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = UI, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MyVariable | UI ", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UWidgetComponent> CharacterHealthWidgetComponent;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = UI, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "MyVariable | UI | Need To Edit", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<UCharacterHealthWidget> CharacterHealthWidgetClass;
 };

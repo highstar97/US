@@ -1,5 +1,6 @@
 #include "Components/USCombatComponent.h"
 
+#include "Characters/USCombatCharacter.h"
 #include "Components/USWeaponComponent.h"
 #include "Weapons/USWeapon.h"
 
@@ -10,41 +11,40 @@ UUSCombatComponent::UUSCombatComponent()
 	WeaponComponent = CreateDefaultSubobject<UUSWeaponComponent>(TEXT("WeaponComponent"));
 }
 
-TOptional<bool> UUSCombatComponent::GetIsWeaponEquipped() const
+AUSWeapon* UUSCombatComponent::GetEquippedWeapon() const
 {
-    if (!IsValid(WeaponComponent)) return TOptional<bool>();
-    
-    if (WeaponComponent->GetEquippedWeapon())
+    if (!IsValid(WeaponComponent))
     {
-        return TOptional<bool>(true);
+        UE_LOG(LogTemp, Error, TEXT("%s의 Weapon Component가 유효하지 않음."), *GetOwner()->GetActorLabel());
+        return nullptr;
     }
-    return TOptional<bool>(false);
+
+    AUSWeapon* EquippedWeapon = WeaponComponent->GetEquippedWeapon();
+    if (IsValid(EquippedWeapon))
+    {
+        return EquippedWeapon;
+    }
+    else return nullptr;
 }
 
-void UUSCombatComponent::Attack()
+bool UUSCombatComponent::Attack()
 {
-    TOptional<bool> IsWeaponEquippedQureyResult = GetIsWeaponEquipped();
+    AUSWeapon* EquippedWeapon = GetEquippedWeapon();
+    if (!IsValid(EquippedWeapon)) return false;
 
-    if (!IsWeaponEquippedQureyResult.IsSet()) return;
-
-    if (IsWeaponEquippedQureyResult.GetValue())
+    AUSCombatCharacter* CombatCharacter = Cast<AUSCombatCharacter>(GetOwner());
+    if (!IsValid(CombatCharacter)) return false;
+    
+    EquippedWeapon->Attack();
+    if (CombatCharacter->IsPlayerControlled())
     {
         EnterCombat();
     }
-    WeaponComponent->UseWeapon();
+    return true;
 }
-
-void UUSCombatComponent::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
 
 void UUSCombatComponent::EnterCombat()
 {
-    UWorld* World = GetWorld();
-    if (!World) return;
-
     if (bIsInCombat)
     {
         UE_LOG(LogTemp, Warning, TEXT("Combat Extended"));
@@ -72,5 +72,5 @@ void UUSCombatComponent::ResetCombatTimer()
     if (!World) return;
 
     World->GetTimerManager().ClearTimer(CombatTimerHandle);
-    World->GetTimerManager().SetTimer(CombatTimerHandle, this, &UUSCombatComponent::ExitCombat, CombatTimeoutDuration, false);
+    World->GetTimerManager().SetTimer(CombatTimerHandle, this, &UUSCombatComponent::ExitCombat, CombatTimeoutThreshold, false);
 }

@@ -15,14 +15,13 @@ class US_API UProjectileSubsystem : public UWorldSubsystem
 public:
     virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
-    // World 생성 시 호출되어, Pools에 등록되어 있는 DataAsset의 Projectile을 초기 Pool 사이즈 만큼 초기화하는 함수
-    void InitProjectilePools();
+    // PoolMap에 ProjectileDataAsset이 있는지 확인하고, 없다면 추가
+    void TryRegisterProjectileInPool(const UProjectileDataAsset* ProjectileDataAsset);
 
-    AUSProjectile* GetAvailableProjectile(UProjectileDataAsset* DataAsset);
-
-    void RegistProjectilePool(UProjectileDataAsset* DataAsset, AUSProjectilePool* Pool);
+    // PoolMap에 ProjectileDataAsset이 있다면 해당 Pool에서 사용가능한 Projectile 리턴
+    AUSProjectile* GetAvailableProjectile(UProjectileDataAsset* ProjectileDataAsset);
 
 private:
     UPROPERTY()
-    TMap<UProjectileDataAsset*, AUSProjectilePool*> ProjectilePools;
+    TMap<const UProjectileDataAsset*, AUSProjectilePool*> PoolMap;
 };

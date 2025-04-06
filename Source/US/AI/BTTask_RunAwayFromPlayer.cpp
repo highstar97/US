@@ -21,7 +21,7 @@ EBTNodeResult::Type UBTTask_RunAwayFromPlayer::ExecuteTask(UBehaviorTreeComponen
     AUSCombatCharacter* Self = Cast<AUSCombatCharacter>(Controller->GetCharacter());
     AUSCombatCharacter* Target = Cast<AUSCombatCharacter>(Blackboard->GetValueAsObject("TargetActor"));
 
-    if (!Self || !Target) return EBTNodeResult::Failed;
+    if (!IsValid(Self) || !IsValid(Target)) return EBTNodeResult::Failed;
 
     FVector AwayFromPlayerDirection = (Self->GetActorLocation() - Target->GetActorLocation()).GetSafeNormal();
     FVector FleeDestination = Self->GetActorLocation() + AwayFromPlayerDirection * FleeingDistance;

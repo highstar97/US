@@ -33,6 +33,11 @@ void AUSHeroCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
+	AttackRepeatedly(DeltaSeconds);
+}
+
+void AUSHeroCharacter::AttackRepeatedly(float DeltaSeconds)
+{
 	float AttackSpeed = GetStatComponent()->GetAttackSpeed();
 	if (AttackSpeed <= 0.0f) return;
 

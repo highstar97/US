@@ -32,19 +32,16 @@ private:
     UFUNCTION()
     void AnimNotify_EnableInput();
 
-    UFUNCTION()
-    void AnimNotify_CallAttackLogic();
-
 private:
-    UPROPERTY(VisibleDefaultsOnly, Category = State, meta = (AllowPrivateAccess = "true"), BlueprintGetter = GetIsInCombat)
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MyVariable | State", meta = (AllowPrivateAccess = "true"), BlueprintGetter = GetIsInCombat)
     bool bIsInCombat;
 
-    UPROPERTY(VisibleDefaultsOnly, Category = State, meta = (AllowPrivateAccess = "true"), BlueprintGetter = GetIsWeaponEquipped)
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MyVariable | State", meta = (AllowPrivateAccess = "true"), BlueprintGetter = GetIsWeaponEquipped)
     bool bIsWeaponEquipped;
 
-    UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MyVariable", meta = (AllowPrivateAccess = "true"))
     TWeakObjectPtr<AUSCombatCharacter> CombatCharacter;
 
-    UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MyVariable", meta = (AllowPrivateAccess = "true"))
     TWeakObjectPtr<UUSCombatComponent> CombatComponent;
 };

@@ -6,6 +6,7 @@
 UUSStateComponent::UUSStateComponent()
 {
     PrimaryComponentTick.bCanEverTick = true;
+
     CurrentState = EState::IDLE;
     bIsDead = false;
     Speed = 0.0f;

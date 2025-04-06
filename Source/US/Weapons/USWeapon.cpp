@@ -16,12 +16,12 @@ AUSWeapon::AUSWeapon()
 	InteractionCapsuleComponent->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 	RootComponent = InteractionCapsuleComponent;
 
-	WeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponMesh"));
-	WeaponMesh->SetupAttachment(RootComponent);
-	WeaponMesh->SetRenderCustomDepth(true);
+	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
+	MeshComponent->SetupAttachment(RootComponent);
+	MeshComponent->SetRenderCustomDepth(true);
 
 	PostProcessComponent = CreateDefaultSubobject<UPostProcessComponent>(TEXT("PostProcessComponent"));
-	PostProcessComponent->SetupAttachment(WeaponMesh);
+	PostProcessComponent->SetupAttachment(MeshComponent);
 	PostProcessComponent->bUnbound = false;
 	// TODO : M_PostProcessAboutRarity C++에서 추가할 수 있으면 추가하기.
 }
@@ -43,6 +43,15 @@ float AUSWeapon::GetRange() const
 	return IsValid(WeaponDataAsset) ? WeaponDataAsset->NumericData.Range : 0.0f;
 }
 
+FVector AUSWeapon::GetMuzzleLocation() const
+{
+	if (MeshComponent->DoesSocketExist(TEXT("MuzzleSocket")))
+	{
+		return MeshComponent->GetSocketLocation(TEXT("MuzzleSocket"));
+	}
+	return FVector::ZeroVector;
+}
+
 void AUSWeapon::BeginPlay()
 {
 	Super::BeginPlay();
@@ -61,7 +70,7 @@ void AUSWeapon::Initialize()
 {
 	if (IsValid(WeaponDataAsset))
 	{
-		WeaponMesh->SetStaticMesh(WeaponDataAsset->AssetData.Mesh);
+		MeshComponent->SetStaticMesh(WeaponDataAsset->AssetData.Mesh);
 		
 		SetActorLabel(FText(WeaponDataAsset->TextData.Name).ToString());
 		InteractableData.Name = WeaponDataAsset->TextData.Name;
@@ -76,9 +85,9 @@ void AUSWeapon::Initialize()
 
 void AUSWeapon::SetWeaponOutlineColor()
 {
-	if (IsValid(WeaponMesh) && IsValid(WeaponDataAsset))
+	if (IsValid(MeshComponent) && IsValid(WeaponDataAsset))
 	{
-		WeaponMesh->CustomDepthStencilValue = static_cast<uint8>(WeaponDataAsset->Rarity);
+		MeshComponent->CustomDepthStencilValue = static_cast<uint8>(WeaponDataAsset->Rarity);
 	}
 	else
 	{

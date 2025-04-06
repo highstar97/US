@@ -25,22 +25,24 @@ public:
 
 	float GetRange() const;
 
+	FVector GetMuzzleLocation() const;
+
 protected:
 	virtual void BeginPlay() override;
 
 	virtual void OnConstruction(const FTransform& Transform) override;
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MyVariable | Component ", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UCapsuleComponent> InteractionCapsuleComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Weapon, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UStaticMeshComponent> WeaponMesh;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MyVariable | Component ", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UStaticMeshComponent> MeshComponent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MyVariable | Component ", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UPostProcessComponent> PostProcessComponent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MyVariable | Data Asset | Need To Edit", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UWeaponDataAsset> WeaponDataAsset;
 
 	TWeakObjectPtr<ACharacter> OwnerCharacter;

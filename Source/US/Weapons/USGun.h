@@ -19,7 +19,10 @@ public:
 
 	virtual void Interact(ACharacter* Interactor) override;
 
+protected:
+	virtual void BeginPlay() override;
+
 private:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Weapon | Projectile", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MyVariable | Data Asset | Need To Edit", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UProjectileDataAsset> ProjectileDataAsset;
 };

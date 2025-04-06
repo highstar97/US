@@ -19,7 +19,7 @@ void UUSWeaponComponent::EquipWeapon(AUSWeapon* NewWeapon)
 	}
 
 	EquippedWeapon = NewWeapon;
-	UE_LOG(LogTemp, Warning, TEXT("Weapon Equipped: %s"), *NewWeapon->GetActorLabel());
+	UE_LOG(LogTemp, Warning, TEXT("Weapon Equipped: %s"), *EquippedWeapon->GetActorLabel());
 
 	if (AUSCombatCharacter* CombatCharacter = Cast<AUSCombatCharacter>(GetOwner()))
 	{
@@ -36,7 +36,7 @@ void UUSWeaponComponent::EquipWeapon(AUSWeapon* NewWeapon)
 
 void UUSWeaponComponent::UnequipWeapon()
 {
-	if (EquippedWeapon == nullptr) return;
+	if (!IsValid(EquippedWeapon)) return;
 
 	EquippedWeapon->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	EquippedWeapon->SetActorRotation(FRotator::ZeroRotator);
@@ -45,22 +45,18 @@ void UUSWeaponComponent::UnequipWeapon()
 	EquippedWeapon = nullptr;
 }
 
-void UUSWeaponComponent::UseWeapon()
-{
-    EquippedWeapon->Attack();	// CombatComponet에서 Weapon 착용 여부 이미 확인.
-}
-
 void UUSWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (!IS_VALID_OR_EXIT(DefaultWeaponClass, TEXT("Default Weapon Class가 유효하지 않습니다."))) return;
+	if (!IS_VALID_OR_WARN(DefaultWeaponClass, FString::Printf(TEXT("%s의 BP에서 Default Weapon Class가 할당되지 않음."),*GetOwner()->GetActorLabel()))) return;
 
+	// 게임 시작 시, 기본 무기 할당
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = GetOwner();
 	SpawnParams.Instigator = GetOwner()->GetInstigator();
 	AUSWeapon* SpawnedWeapon = GetWorld()->SpawnActor<AUSWeapon>(DefaultWeaponClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
-	if (!SpawnedWeapon) return;
+	if (!IsValid(SpawnedWeapon)) return;
 		
 	SpawnedWeapon->Interact(Cast<AUSCombatCharacter>(GetOwner()));
 }

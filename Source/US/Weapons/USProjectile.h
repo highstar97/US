@@ -18,28 +18,24 @@ public:
 
     FORCEINLINE bool GetIsActive() const { return bIsActive; }
 
-    void InitProjectile(const UProjectileDataAsset* _ProjectileDataAsset);
+    void Init(const UProjectileDataAsset* ProjectileDataAsset);
 
     void ActivateProjectile(FVector Location, FVector Direction);
 
     void DeactivateProjectile();
 
 protected:
-    virtual void BeginPlay() override;
-
-protected:
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapon | Projectile", meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MyVariable | Component ", meta = (AllowPrivateAccess = "true"))
     TObjectPtr<UStaticMeshComponent> MeshComponent;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapon | Projectile", meta = (AllowPrivateAccess = "true"))
-    const UProjectileDataAsset* ProjectileDataAsset;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MyVariable | Data Asset ", meta = (AllowPrivateAccess = "true"))
+    TObjectPtr<const UProjectileDataAsset> ProjectileDataAsset;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapon | Projectile", meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MyVariable | Projectile ", meta = (AllowPrivateAccess = "true"))
     FVector Velocity;
-
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapon | Projectile", meta = (AllowPrivateAccess = "true"))
-    float ElapsedTime = 0.0f;
-
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapon | Projectile", meta = (AllowPrivateAccess = "true"))
-    bool bIsActive = false;
+    
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MyVariable | Projectile ", meta = (AllowPrivateAccess = "true"))
+    bool bIsActive;
+    
+    float ElapsedTime;
 };

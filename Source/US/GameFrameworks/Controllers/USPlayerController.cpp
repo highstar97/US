@@ -1,24 +1,27 @@
 #include "USPlayerController.h"
 
-#include "Characters/USCharacter.h"
+#include "DataValidator.h"
+#include "Characters/USCombatCharacter.h"
 #include "Components/USInteractionComponent.h"
+#include "Weapons/USWeapon.h"
 #include "UI/MainHub.h"
 
 #include "Blueprint/UserWidget.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-	
+
 AUSPlayerController::AUSPlayerController()
 {
 	bShowMouseCursor = false;
 
 	// Create a InteractionComponent...
 	InteractionComponent = CreateDefaultSubobject<UUSInteractionComponent>(TEXT("InteractionComponent"));
+
+	CrosshairLocation = FVector::ZeroVector;
 }
 
 void AUSPlayerController::BeginPlay()
-{
-	// Call the base class  
+{ 
 	Super::BeginPlay();
 
 	// Add Input Mapping Context
@@ -27,10 +30,8 @@ void AUSPlayerController::BeginPlay()
 		Subsystem->AddMappingContext(DefaultMappingContext, 0);
 	}
 
-	// TODO : Create Mouse Cursor Widget
-
-	// Create MailHubWidget
-	if(IsValid(MainHubWidgetClass))
+	// Create MainHubWidget
+	if (IS_VALID_OR_WARN(MainHubWidgetClass, FString::Printf(TEXT("%s의 BP에서 Main Hub Widget Class가 할당되지 않음."), *GetActorLabel())))
 	{
 		MainHubWidget = CreateWidget<UMainHub>(this, MainHubWidgetClass);
 		if (MainHubWidget.IsValid())
@@ -48,8 +49,6 @@ void AUSPlayerController::SetupInputComponent()
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent))
 	{
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &AUSPlayerController::OnInteractStarted);
-
-		// Setup move input events
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AUSPlayerController::Move);
 	}
 }
@@ -58,7 +57,7 @@ void AUSPlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
 
-	UpdateLookToMouse(DeltaTime);
+	MakeCharacterLookAtCrosshair(DeltaTime);
 }
 
 void AUSPlayerController::OnInteractStarted()
@@ -70,32 +69,65 @@ void AUSPlayerController::OnInteractStarted()
 
 void AUSPlayerController::Move(const FInputActionValue& Value)
 {
-	AUSCharacter* USCharacter = Cast<AUSCharacter>(GetCharacter());
+	AUSCombatCharacter* CombatCharacter = Cast<AUSCombatCharacter>(GetCharacter());
 
-	if (!IsValid(USCharacter)) return;
+	if (!IsValid(CombatCharacter)) return;
 
 	FVector2D MoveVector = Value.Get<FVector2D>();
-	USCharacter->AddMovementInput(FVector::ForwardVector, MoveVector.Y);
-	USCharacter->AddMovementInput(FVector::RightVector, MoveVector.X);
+	CombatCharacter->AddMovementInput(FVector::ForwardVector, MoveVector.Y);
+	CombatCharacter->AddMovementInput(FVector::RightVector, MoveVector.X);
 }
 
-void AUSPlayerController::UpdateLookToMouse(float DeltaTime)
+void AUSPlayerController::MakeCharacterLookAtCrosshair(float DeltaTime)
 {
-	AUSCharacter* USCharacter = Cast<AUSCharacter>(GetCharacter());
-	
-	if (!IsValid(USCharacter)) return;
+	AUSCombatCharacter* CombatCharacter = Cast<AUSCombatCharacter>(GetCharacter());
+	if (!IsValid(CombatCharacter)) return;
 
-	FVector WorldPosition , WorldDirection;
+	FVector MuzzleLocation;
+	AUSWeapon* EquippedWeapon = CombatCharacter->GetEquippedWeapon();
+	if (IsValid(EquippedWeapon))
+	{
+		MuzzleLocation = EquippedWeapon->GetMuzzleLocation();
+	}
+	else
+	{
+		MuzzleLocation = CombatCharacter->GetActorLocation();
+	}
+
+	FVector WorldPosition, WorldDirection;
 	if (DeprojectMousePositionToWorld(WorldPosition, WorldDirection))
 	{
-		FVector ActorLocation = USCharacter->GetActorLocation();
-		FVector TargetPoint = WorldPosition + WorldDirection * 1000.f;
-		FVector LookDirection = (TargetPoint - ActorLocation).GetSafeNormal2D();
-		if (!LookDirection.IsNearlyZero())
+		// Line Trace 세팅
+		FVector TraceStart = WorldPosition;
+		FVector TraceEnd = TraceStart + (WorldDirection * 10000.f);
+
+		FHitResult HitResult;
+		FCollisionQueryParams Params;
+		Params.AddIgnoredActor(CombatCharacter);
+
+		// Line Trace
+		bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_Visibility, Params);
+
+		if (bHit)
 		{
-			FRotator TargetRotation = LookDirection.Rotation();
-			FRotator NewRotation = FMath::RInterpTo(USCharacter->GetActorRotation(), TargetRotation, DeltaTime, 10.0f);
-			USCharacter->SetActorRotation(NewRotation);
+			// Crosshair 위치 저장
+			CrosshairLocation = HitResult.ImpactPoint;
+			CrosshairLocation.Z = MuzzleLocation.Z;
+
+			FVector TargetLocation = HitResult.ImpactPoint;
+			FVector CharacterLocation = CombatCharacter->GetActorLocation();
+
+			// Yaw 회전만 고려 (Z 높이는 무시)
+			FVector DirectionToLook = (TargetLocation - CharacterLocation);
+			DirectionToLook.Z = 0.f;
+
+			if (!DirectionToLook.IsNearlyZero())
+			{
+				FRotator TargetRotation = DirectionToLook.Rotation();
+				FRotator CurrentRotation = CombatCharacter->GetActorRotation();
+				FRotator NewRotation = FMath::RInterpTo(CurrentRotation, TargetRotation, DeltaTime, 10.f);
+				CombatCharacter->SetActorRotation(NewRotation);
+			}
 		}
 	}
 }

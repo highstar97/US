@@ -9,7 +9,6 @@
 UBTTask_FindPatrolLocation::UBTTask_FindPatrolLocation()
 {
 	NodeName = "Find Patrol Location";
-
     PatrolRadius = 400.0f;
 }
 
@@ -21,7 +20,7 @@ EBTNodeResult::Type UBTTask_FindPatrolLocation::ExecuteTask(UBehaviorTreeCompone
     UBlackboardComponent* Blackboard = OwnerComp.GetBlackboardComponent();
     AUSCombatCharacter* Self = Cast<AUSCombatCharacter>(Controller->GetCharacter());
 
-    if (!Self || !Blackboard) return EBTNodeResult::Failed;
+    if (!IsValid(Self)) return EBTNodeResult::Failed;
 
     UNavigationSystemV1* NavigationSystem = UNavigationSystemV1::GetCurrent(Self->GetWorld());
     FNavLocation NavigationLocation;

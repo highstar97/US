@@ -24,11 +24,11 @@ void UBTService_CheckAttackRange::TickNode(UBehaviorTreeComponent& OwnerComp, ui
     AUSCombatCharacter* Target = Cast<AUSCombatCharacter>(Blackboard->GetValueAsObject("TargetActor"));
     float AttackRange = Self->GetCombatComponent()->GetWeaponComponent()->GetEquippedWeapon()->GetRange();
 
-    if (!Self) return;
+    if (!IsValid(Self)) return;
 
     if (AttackRange > 0.0f)
     {
-        if (Target)
+        if (IsValid(Target))
         {
             float Distance = FVector::Dist(Self->GetActorLocation(), Target->GetActorLocation());
             Blackboard->SetValueAsBool("IsInAttackRange", Distance <= AttackRange);

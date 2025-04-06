@@ -21,6 +21,8 @@ public:
 
 	FORCEINLINE UUSInteractionComponent* GetInteractionComponent() const { return InteractionComponent; }
 
+	FORCEINLINE FVector GetCrosshairLocation() const { return CrosshairLocation; }
+
 	FORCEINLINE UMainHub* GetMainHubWidget() const { return MainHubWidget.Get(); }
 
 	/** MappingContext */
@@ -46,17 +48,20 @@ protected:
 private:
 	void Move(const FInputActionValue& Value);
 
-	void UpdateLookToMouse(float DeltaTime);
+	void MakeCharacterLookAtCrosshair(float DeltaTime);
 
 private:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Interaction, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MyVariable | Component ", meta = (AllowPrivateAccess = "true"))
 	UUSInteractionComponent* InteractionComponent;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MyVariable | UI ", meta = (AllowPrivateAccess = "true"))
+	FVector CrosshairLocation;
+
 	/** WBP_MainHub Class */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = UI, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "MyVariable | UI | Need To Edit", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<UMainHub> MainHubWidgetClass;
 
 	/** WBP_MailHub Instance */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = UI, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MyVariable | UI ", meta = (AllowPrivateAccess = "true"))
 	TWeakObjectPtr<UMainHub> MainHubWidget;
 };

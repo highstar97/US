@@ -13,6 +13,6 @@ protected:
     virtual void BeginPlay() override;
 
 private:
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = AI, meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MyVariable | Weapon | Need To Edit", meta = (AllowPrivateAccess = "true"))
     TObjectPtr<UBehaviorTree> BehaviorTreeAsset;
 };

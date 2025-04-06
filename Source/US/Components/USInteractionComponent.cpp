@@ -16,18 +16,18 @@ UUSInteractionComponent::UUSInteractionComponent()
 
 void UUSInteractionComponent::HandleInteract()
 {
+    if (!IsValid(OwnerController) || !IsValid(OwnerCharacter)) return;
+
     if (!IsValid(CurrentInteractable.GetObject()))
     {
         UE_LOG(LogTemp, Warning, TEXT("Nothing to Interact"));
         return;
     }
-    if (!IsValid(OwnerController)) return;
-    if (!OwnerCharacter.IsValid()) return;
 
     if (IsReadyToInteract())
     {
         OwnerController->StopMovement();
-        OwnerCharacter.Get()->GetStateComponent()->SetCurrentState(EState::INTERACTING);
+        OwnerCharacter->GetStateComponent()->SetCurrentState(EState::INTERACTING);
 
         if (CurrentInteractable->InteractableData.InteractableType == EInteractableType::PRESSSHORT)
         {
@@ -42,22 +42,18 @@ void UUSInteractionComponent::HandleInteract()
 
 void UUSInteractionComponent::InteractShort()
 {
-    if (!IsValid(CurrentInteractable.GetObject())) return;
+    if (!IsValid(CurrentInteractable.GetObject()) || !IsValid(OwnerCharacter)) return;
 
-    if (!OwnerCharacter.IsValid()) return;
-
-    CurrentInteractable->Interact(OwnerCharacter.Get());
+    CurrentInteractable->Interact(OwnerCharacter);
     CurrentInteractable = nullptr;
 
-    OwnerCharacter.Get()->GetStateComponent()->SetCurrentState(EState::IDLE);
+    OwnerCharacter->GetStateComponent()->SetCurrentState(EState::IDLE);
     HideInteractionUI();
 }
 
 void UUSInteractionComponent::InteractLong()
 {
-    if (!IsValid(CurrentInteractable.GetObject())) return;
-
-    if (!OwnerCharacter.IsValid()) return;
+    if (!IsValid(CurrentInteractable.GetObject()) || !IsValid(OwnerCharacter)) return;
 
     if (UWorld* World = GetWorld())
     {
@@ -81,7 +77,6 @@ void UUSInteractionComponent::InteractLong()
     }
 }
 
-// Called when the game starts
 void UUSInteractionComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -89,9 +84,9 @@ void UUSInteractionComponent::BeginPlay()
     if (OwnerController = Cast<AUSPlayerController>(GetOwner()))
     {
         OwnerCharacter = Cast<AUSCharacter>(OwnerController->GetCharacter());
-        if (OwnerCharacter.IsValid())
+        if (IsValid(OwnerCharacter))
         {
-            UCapsuleComponent* CapsuleComponent = OwnerCharacter.Get()->FindComponentByClass<UCapsuleComponent>();
+            UCapsuleComponent* CapsuleComponent = OwnerCharacter->FindComponentByClass<UCapsuleComponent>();
             if (CapsuleComponent)
             {
                 CapsuleComponent->OnComponentBeginOverlap.AddDynamic(this, &UUSInteractionComponent::OnOverlapBegin);
@@ -124,9 +119,7 @@ void UUSInteractionComponent::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, 
 
 void UUSInteractionComponent::ShowInteractionUI()
 {
-    if (!IsValid(OwnerController)) return;
-
-    if (!IsValid(CurrentInteractable.GetObject())) return;
+    if (!IsValid(CurrentInteractable.GetObject()) || !IsValid(OwnerController)) return;
 
     if (UInteractionWidget* InteractionWidget = OwnerController->GetMainHubWidget()->GetInteractionWidget())
     {
@@ -153,9 +146,9 @@ void UUSInteractionComponent::HideInteractionUI()
 
 bool UUSInteractionComponent::IsReadyToInteract()
 {
-    if (!OwnerCharacter.IsValid()) return false;
+    if (!IsValid(OwnerCharacter)) return false;
 
-    switch (OwnerCharacter.Get()->GetStateComponent()->GetCurrentState())
+    switch (OwnerCharacter->GetStateComponent()->GetCurrentState())
     {
     case(EState::IDLE):
     {
@@ -182,9 +175,9 @@ bool UUSInteractionComponent::IsReadyToInteract()
 
 void UUSInteractionComponent::UpdateInteractLong()
 {
-    if (!OwnerCharacter.IsValid()) return;
+    if (!IsValid(OwnerCharacter)) return;
 
-    if (OwnerCharacter.Get()->GetStateComponent()->GetCurrentState() == EState::INTERACTING)
+    if (OwnerCharacter->GetStateComponent()->GetCurrentState() == EState::INTERACTING)
     {
         UpdateInteractionProgress();
     }
@@ -196,9 +189,7 @@ void UUSInteractionComponent::UpdateInteractLong()
 
 void UUSInteractionComponent::UpdateInteractionProgress()
 {
-    if (!IsValid(CurrentInteractable.GetObject())) return;
-
-    if (!IsValid(OwnerController)) return;
+    if (!IsValid(CurrentInteractable.GetObject()) || !IsValid(OwnerController)) return;
 
     if (UInteractionWidget* InteractionWidget = OwnerController->GetMainHubWidget()->GetInteractionWidget())
     {
@@ -212,9 +203,7 @@ void UUSInteractionComponent::UpdateInteractionProgress()
 
 void UUSInteractionComponent::CompleteInteraction()
 {
-    if (!IsValid(CurrentInteractable.GetObject())) return;
-
-    if (!IsValid(OwnerController)) return;
+    if (!IsValid(CurrentInteractable.GetObject()) || !IsValid(OwnerController)) return;
 
     if (UInteractionWidget* InteractionWidget = OwnerController->GetMainHubWidget()->GetInteractionWidget())
     {

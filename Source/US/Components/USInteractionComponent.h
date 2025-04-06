@@ -47,11 +47,15 @@ private:
 	void FailedtoInteract();
 
 private:
-	FTimerHandle InteractionProgressHandle;
-	FTimerHandle InteractionTimerHandle;
-
+	UPROPERTY()
 	TObjectPtr<AUSPlayerController> OwnerController;
-	TWeakObjectPtr<AUSCharacter> OwnerCharacter;
 
-	TScriptInterface<IInteractionInterface> CurrentInteractable;
+	UPROPERTY()
+	TObjectPtr<AUSCharacter> OwnerCharacter;
+
+	TScriptInterface<IInteractionInterface> CurrentInteractable; 
+	
+	FTimerHandle InteractionProgressHandle;
+	
+	FTimerHandle InteractionTimerHandle;
 };

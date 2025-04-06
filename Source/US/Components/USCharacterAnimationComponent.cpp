@@ -11,29 +11,29 @@ UUSCharacterAnimationComponent::UUSCharacterAnimationComponent()
 
 void UUSCharacterAnimationComponent::ChangeAttackMontagePriority(EAnimationPriority _Priority)
 {
-    if (MontagePriorityMap.Contains(AttackMontage.Get()))
+    if (MontagePriorityMap.Contains(AttackMontage))
     {
-        MontagePriorityMap[AttackMontage.Get()] = _Priority;
+        MontagePriorityMap[AttackMontage] = _Priority;
     }
 }
 
 bool UUSCharacterAnimationComponent::PlayAttackMontage()
 {
-    return PlayMontageWithPriority(AttackMontage.Get());
+    return PlayMontageWithPriority(AttackMontage);
 }
 
 bool UUSCharacterAnimationComponent::PlayHitReactionMontage()
 {
     int32 RandomNumber = GenerateRandomInt(0, HitReactionMontageArray.Num() - 1);
 
-    return PlayMontageWithPriority(HitReactionMontageArray[RandomNumber].Get());
+    return PlayMontageWithPriority(HitReactionMontageArray[RandomNumber]);
 }
 
 bool UUSCharacterAnimationComponent::PlayDeathMontage()
 {
     int32 RandomNumber = GenerateRandomInt(0, DeathMontageArray.Num() - 1);
 
-    return PlayMontageWithPriority(DeathMontageArray[RandomNumber].Get());
+    return PlayMontageWithPriority(DeathMontageArray[RandomNumber]);
 }
 
 void UUSCharacterAnimationComponent::BeginPlay()
@@ -45,24 +45,24 @@ void UUSCharacterAnimationComponent::BeginPlay()
         SkeletalMeshComponent = CombatCharacter->GetMesh();
         IS_VALID_OR_WARN(SkeletalMeshComponent.Get(), TEXT("SkeletalMeshComponent가 유효하지 않음."));
         
-        if (IS_VALID_OR_WARN(AttackMontage.Get(), TEXT("Attack Montage가 제대로 할당되지 않음.")))
+        if (IS_VALID_OR_WARN(AttackMontage, FString::Printf(TEXT("%s의 BP에서 Attack Montage가 할당되지 않음."), *(CombatCharacter->GetActorLabel()))))
         {
-            MontagePriorityMap.Emplace(AttackMontage.Get(), EAnimationPriority::Attack);
+            MontagePriorityMap.Emplace(AttackMontage, EAnimationPriority::Attack);
         }
 
         for (TObjectPtr<UAnimMontage> Montage : HitReactionMontageArray)
         {
-            if (IS_VALID_OR_WARN(Montage.Get(), TEXT("Hit Reaction Montage가 제대로 할당되지 않음.")))
+            if (IS_VALID_OR_WARN(Montage, FString::Printf(TEXT("%s의 BP에서 Hit Reaction Montage가 할당되지 않음."), *(CombatCharacter->GetActorLabel()))))
             {
-                MontagePriorityMap.Emplace(Montage.Get(), EAnimationPriority::Hit);
+                MontagePriorityMap.Emplace(Montage, EAnimationPriority::Hit);
             }
         }
         
-        for (TObjectPtr<UAnimMontage> Montage : HitReactionMontageArray)
+        for (TObjectPtr<UAnimMontage> Montage : DeathMontageArray)
         {
-            if (IS_VALID_OR_WARN(Montage.Get(), TEXT("Dath Montage가 제대로 할당되지 않음.")))
+            if (IS_VALID_OR_WARN(Montage, FString::Printf(TEXT("%s의 BP에서 Death Montage가 할당되지 않음."), *(CombatCharacter->GetActorLabel()))))
             {
-                MontagePriorityMap.Emplace(Montage.Get(), EAnimationPriority::Death);
+                MontagePriorityMap.Emplace(Montage, EAnimationPriority::Death);
             }
         }
     }
@@ -70,12 +70,12 @@ void UUSCharacterAnimationComponent::BeginPlay()
 
 bool UUSCharacterAnimationComponent::PlayMontageWithPriority(UAnimMontage* MontageToPlay)
 {
-    if (!IS_VALID_OR_WARN(MontageToPlay, TEXT("Montage가 유효하지 않음."))) return false;
+    if (!IsValid(MontageToPlay)) return false;
 
-    if (!IS_VALID_OR_WARN(SkeletalMeshComponent.Get(), TEXT("SkeletalMeshComponent가 유효하지 않음."))) return false;
+    if (!IsValid(SkeletalMeshComponent.Get())) return false;
 
     UAnimInstance* AnimInstance = SkeletalMeshComponent->GetAnimInstance();
-    if (!IS_VALID_OR_WARN(AnimInstance, TEXT("AnimInstance가 유효하지 않음."))) return false;
+    if (!IsValid(AnimInstance)) return false;
 
     if (UAnimMontage* CurrentMontage = AnimInstance->GetCurrentActiveMontage())
     {

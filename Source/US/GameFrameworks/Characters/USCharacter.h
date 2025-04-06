@@ -18,11 +18,11 @@ public:
 	FORCEINLINE UUSStateComponent* GetStateComponent() const { return StateComponent.Get(); }
 
 	FORCEINLINE UUSCharacterAnimationComponent* GetCharacterAnimationComponent() const { return CharacterAnimationComponent.Get(); }
-
+	
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Component, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MyVariable | Component ", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UUSCharacterAnimationComponent> CharacterAnimationComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Component, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MyVariable | Component ", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UUSStateComponent> StateComponent;
 };

@@ -14,12 +14,12 @@ public:
 
 	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 
-public:
-	UPROPERTY(EditAnywhere)
+private:
+	UPROPERTY(EditAnywhere, Category = "MyVariable | AI Setting | Able To Edit")
 	float CheckingRadius;
 
-	UPROPERTY(EditAnywhere)
-	float ForgetTime;
+	UPROPERTY(EditAnywhere, Category = "MyVariable | AI Setting | Able To Edit")
+	float TargetLostThreshold;
 
-	float NotSeenDuration = 0.0f;
+	float TargetNotSeenDuration;
 };

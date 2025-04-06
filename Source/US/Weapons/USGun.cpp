@@ -1,14 +1,17 @@
 #include "Weapons/USGun.h"
 
+#include "DataValidator.h"
 #include "ProjectileSubsystem.h"
 #include "Characters/USCombatCharacter.h"
+#include "Controllers/USPlayerController.h"
+#include "Controllers/USAIController.h"
 #include "Components/USCombatComponent.h"
 #include "Components/USWeaponComponent.h"
 #include "Weapons/USProjectile.h"
-#include "Weapons/USProjectilePool.h"
+#include "Weapons/Datas/ProjectileDataAsset.h"
 #include "Weapons/Datas/WeaponDataAsset.h"
 
-#include "Kismet/GameplayStatics.h"
+#include "BehaviorTree/BlackboardComponent.h"
 
 AUSGun::AUSGun()
 {
@@ -19,108 +22,69 @@ void AUSGun::Attack()
 {
 	Super::Attack();
 
-	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
-	if (!PlayerController) return;
-		
-	if (UProjectileSubsystem* Subsystem = GetWorld()->GetSubsystem<UProjectileSubsystem>())
+	if (!OwnerCharacter.IsValid() || !MeshComponent) return;
+
+	UProjectileSubsystem* Subsystem = GetWorld()->GetSubsystem<UProjectileSubsystem>();
+	if (!IsValid(Subsystem)) return;
+
+	AUSProjectile* Projectile = Subsystem->GetAvailableProjectile(ProjectileDataAsset);
+	if (!IsValid(Projectile)) return; 
+	
+	AController* Controller = OwnerCharacter->GetController();
+	if (!Controller) return;
+
+	FVector TargetLocation;
+	if (Controller->IsPlayerController())
 	{
-		if (AUSProjectile* Projectile = Subsystem->GetAvailableProjectile(ProjectileDataAsset))
-		{
-			FVector WorldPosition, WorldDirection;
-			if (PlayerController->DeprojectMousePositionToWorld(WorldPosition, WorldDirection))
-			{
-				FVector SpawnLocation = GetActorLocation() + FVector(100.0f, 0.0f, 0.0f);
-				FVector ToMouse = (WorldPosition + WorldDirection * 10000.f - SpawnLocation).GetSafeNormal2D();	// 평면상 방향 (Z축 제거)
-				Projectile->ActivateProjectile(SpawnLocation, ToMouse);
-				UE_LOG(LogTemp, Warning, TEXT("Shoot %s"), *Projectile->GetActorLabel());
-			}
-		}
+		AUSPlayerController* PlayerController = Cast<AUSPlayerController>(Controller);
+		if (!PlayerController) return;
+		
+		TargetLocation = PlayerController->GetCrosshairLocation();
+	}
+	else
+	{
+		AUSAIController* AIController = Cast<AUSAIController>(Controller);
+		if (!AIController) return;
+
+		UBlackboardComponent* Blackboard = AIController->GetBlackboardComponent();
+		if (!Blackboard) return;
+
+		AUSCombatCharacter* Target = Cast<AUSCombatCharacter>(Blackboard->GetValueAsObject("TargetActor"));
+		if (!Target) return;
+
+		TargetLocation = Target->GetActorLocation();
 	}
 
+	FVector MuzzleLocation = GetMuzzleLocation();
+	FVector FireDirection = (TargetLocation - MuzzleLocation).GetSafeNormal2D();
 
+	Projectile->ActivateProjectile(MuzzleLocation, FireDirection);
 
-	//if (!OwnerCharacter.IsValid()) return;
-	//if (!IsValid(WeaponDataAsset)) return;
-
-	//float InitDamage = WeaponDataAsset->NumericData.Damage;
-	//float InitRange = WeaponDataAsset->NumericData.Range;
-	//UE_LOG(LogTemp, Warning, TEXT("%s Attack!"), *this->GetActorLabel());
-
-	//APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-	//if (!IsValid(PlayerController)) return;
-
-	//FHitResult HitResult;
-	//if (!PlayerController->GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, HitResult)) return;
-
-	//DrawDebugSphere(GetWorld(), HitResult.Location, 1.f, 12, FColor::Green, false, 1.0f);
-
-	//FVector CharacterToHit = HitResult.Location - OwnerCharacter->GetActorLocation();
-	//CharacterToHit.Z = 0.f;
-	//CharacterToHit.Normalize();
-
-	//FVector CharacterForward = OwnerCharacter->GetActorForwardVector();
-	//CharacterForward.Z = 0.f;
-	//CharacterForward.Normalize();
-
-	//float DotProduct = FVector::DotProduct(CharacterToHit, CharacterForward);
-	//DotProduct = FMath::Clamp(DotProduct, -1.0f, 1.0f);
-	//float AngleRadians = FMath::Acos(DotProduct);
-	//float AngleDegrees = FMath::RadiansToDegrees(AngleRadians);
-
-	//FVector OuterProduct = FVector::CrossProduct(CharacterForward, CharacterToHit);
-	//if (OuterProduct.Z < 0.f)
-	//{
-	//	AngleDegrees = -AngleDegrees;
-	//}
-
-	//FRotator NewRotation = OwnerCharacter->GetActorRotation();
-	//NewRotation.Yaw += AngleDegrees;
-	//OwnerCharacter->SetActorRotation(NewRotation);
-
-	//// Ray Trace
-	//FVector TraceStart = ArrowComponent->GetComponentLocation();
-	//FVector TraceEnd = TraceStart + (OwnerCharacter->GetActorForwardVector() * InitRange);
-
-	//HitResult.Reset();
-	//FCollisionQueryParams QueryParams;
-	//TArray<TWeakObjectPtr<const AActor>> IgnoredActors;
-	//IgnoredActors.Add(this);
-	//IgnoredActors.Add(OwnerCharacter.Get());
-	//QueryParams.AddIgnoredActors(IgnoredActors);
-
-	//bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_GameTraceChannel3, QueryParams);
-	//DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 1.0f, 0, 2.0f);
-	//if (bHit)
-	//{
-	//	AActor* HitActor = HitResult.GetActor();
-	//	
-	//	if (HitActor)
-	//	{
-	//		if (AUSCombatCharacter* HitCharacter = Cast<AUSCombatCharacter>(HitActor))
-	//		{
-	//			UE_LOG(LogTemp, Warning, TEXT("Hit Character(%s) take damage %f"), *HitCharacter->GetName(), InitDamage);
-	//			DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10.0f, 12, FColor::Green, false, 1.0f);
-	//			// TODO : Check Damage Logic, 만약 시전자(OwnerCharacter)에게 버프, 디버프가 있다면 미리 처리
-	//			UGameplayStatics::ApplyDamage(HitCharacter, InitDamage, GetInstigatorController(), OwnerCharacter.Get(), UDamageType::StaticClass());
-	//		}
-	//	}
-	//}
-	//else
-	//{
-	//	UE_LOG(LogTemp, Warning, TEXT("No target hit."));
-	//}
+	// 디버깅
+	// DrawDebugSphere(GetWorld(), TargetLocation, 10.f, 12, FColor::Red, false, 1.0f);
+	// DrawDebugLine(GetWorld(), MuzzleLocation, MuzzleLocation + FireDirection * 500.f, FColor::Green, false, 1.0f, 0, 2.0f);
+	// UE_LOG(LogTemp, Warning, TEXT("Shoot %s towards %s"), *Projectile->GetActorLabel(), *TargetLocation.ToString());
 }
 
 void AUSGun::Interact(ACharacter* Interactor)
 {
 	Super::Interact(Interactor);
 
-	if (AUSCombatCharacter* Character = Cast<AUSCombatCharacter>(Interactor))
+	if (AUSCombatCharacter* CombatCharacter = Cast<AUSCombatCharacter>(Interactor))
 	{
-		if (UUSWeaponComponent* WeaponComponent = Character->GetCombatComponent()->GetWeaponComponent())
-		{
-			UE_LOG(LogTemp, Warning, TEXT("%s interact with %s!"), *Character->GetActorLabel(), *GetActorLabel());
-			WeaponComponent->EquipWeapon(this);
-		}
+		CombatCharacter->EquipWeapon(this);
+		UE_LOG(LogTemp, Warning, TEXT("%s interact with %s!"), *CombatCharacter->GetActorLabel(), *GetActorLabel());
+	}
+}
+
+void AUSGun::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if(!IS_VALID_OR_EXIT(ProjectileDataAsset, TEXT("ProjectileDataAsset이 유효하지 않습니다."))) return;
+
+	if (UProjectileSubsystem* Subsystem = GetWorld()->GetSubsystem<UProjectileSubsystem>())
+	{
+		Subsystem->TryRegisterProjectileInPool(ProjectileDataAsset);
 	}
 }

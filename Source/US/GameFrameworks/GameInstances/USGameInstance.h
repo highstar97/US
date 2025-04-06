@@ -20,6 +20,6 @@ public:
     FORCEINLINE UGlobalDataConfig* GetGlobalDataConfig() const { return GlobalDataConfig.Get(); }
 
 private:
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Game Data", meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "MyVariable | Data Config | Need To Edit", meta = (AllowPrivateAccess = "true"))
     TObjectPtr<UGlobalDataConfig> GlobalDataConfig; // 글로벌 데이터 (예: 캐릭터 성장 데이터)
 };

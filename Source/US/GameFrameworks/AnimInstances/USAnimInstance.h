@@ -20,10 +20,10 @@ public:
 
     virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = State, Meta = (BlueprintThreadSafe))
+	UFUNCTION(BlueprintCallable, BlueprintPure, Meta = (BlueprintThreadSafe))
 	UUSStateComponent* GetStateComponent() const { return StateComponent.Get(); }
 
 protected:
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MyVariable | Animation | Need To Edit", meta = (AllowPrivateAccess = "true"))
     TWeakObjectPtr<UUSStateComponent> StateComponent;
 };

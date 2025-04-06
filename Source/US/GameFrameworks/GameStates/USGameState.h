@@ -25,12 +25,12 @@ public:
 	void HideLevelLoadingWidget();
 
 private:
-	UPROPERTY(EditAnywhere, Category = "Game Config", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, Category = "MyVariable | Data Config | Need To Edit", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<ULevelDataConfig> LevelDataConfig;
 
-	UPROPERTY(EditDefaultsOnly, Category = UI, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, Category = "MyVariable | UI | Need To Edit", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<ULevelLoadingWidget> LevelLoadingWidgetClass;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = UI, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MyVariable | UI ", meta = (AllowPrivateAccess = "true"))
 	TWeakObjectPtr<ULevelLoadingWidget> LevelLoadingWidget;
 };

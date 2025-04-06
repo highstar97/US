@@ -84,8 +84,3 @@ void UUSStatComponent::TakeDamage(float DamageAmount)
 		OnCharacterDeath.Broadcast();
 	}
 }
-
-void UUSStatComponent::BeginPlay()
-{
-	Super::BeginPlay();
-}

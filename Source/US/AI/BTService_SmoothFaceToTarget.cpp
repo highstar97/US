@@ -7,6 +7,7 @@
 
 UBTService_SmoothFaceToTarget::UBTService_SmoothFaceToTarget()
 {
+    RotationSpeed = 10.0f;
 }
 
 void UBTService_SmoothFaceToTarget::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
@@ -18,7 +19,7 @@ void UBTService_SmoothFaceToTarget::TickNode(UBehaviorTreeComponent& OwnerComp, 
     AUSCombatCharacter* Self = Cast<AUSCombatCharacter>(Controller->GetCharacter());
     AUSCombatCharacter* Target = Cast<AUSCombatCharacter>(Blackboard->GetValueAsObject("TargetActor"));
     
-    if (!Self || !Target) return;
+    if (!IsValid(Self) || !IsValid(Target)) return;
 
     FVector ToTarget = (Target->GetActorLocation() - Self->GetActorLocation()).GetSafeNormal2D();
     if (ToTarget.IsNearlyZero()) return;

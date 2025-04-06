@@ -4,8 +4,6 @@
 #include "Components/USCombatComponent.h"
 #include "Components/USCharacterAnimationComponent.h"
 
-#include "GameFramework/CharacterMovementComponent.h"
-
 UUSCombatAnimInstance::UUSCombatAnimInstance()
 {
 	bIsInCombat = false;
@@ -29,11 +27,7 @@ void UUSCombatAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
     if (!CombatComponent.IsValid()) return;
 
     bIsInCombat = CombatComponent->GetIsInCombat();
-    TOptional<bool> IsWeaponEquippedQureyResult = CombatComponent->GetIsWeaponEquipped();
-    if (IsWeaponEquippedQureyResult.IsSet())
-    {
-        bIsWeaponEquipped = IsWeaponEquippedQureyResult.GetValue();
-    }
+    bIsWeaponEquipped = CombatComponent->GetEquippedWeapon() != nullptr ? true : false;
 }
 
 void UUSCombatAnimInstance::AnimNotify_DisableInput()
@@ -60,11 +54,4 @@ void UUSCombatAnimInstance::AnimNotify_EnableInput()
             CombatCharacter->EnableInput(PC);
         }
     }
-}
-
-void UUSCombatAnimInstance::AnimNotify_CallAttackLogic()
-{
-    if (!CombatComponent.IsValid()) return;
-
-    //CombatComponent->Attack();
 }

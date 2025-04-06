@@ -38,19 +38,19 @@ protected:
     bool PlayMontageWithPriority(UAnimMontage* MontageToPlay);
 
 private:
-    // Min <= RandomNumber <= Max
+    // 현재 시간을 시드로한 랜덤 Int 생성, (Min <= RandomNumber <= Max)
     int32 GenerateRandomInt(int32 Min, int32 Max);
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation", meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MyVariable | Animation | Need To Edit", meta = (AllowPrivateAccess = "true"))
     TObjectPtr<UAnimMontage> AttackMontage;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation", meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MyVariable | Animation | Need To Edit", meta = (AllowPrivateAccess = "true"))
     TArray<TObjectPtr<UAnimMontage>> HitReactionMontageArray;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation", meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MyVariable | Animation | Need To Edit", meta = (AllowPrivateAccess = "true"))
     TArray<TObjectPtr<UAnimMontage>> DeathMontageArray;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = "true"))
+    UPROPERTY()
     TMap<TObjectPtr<UAnimMontage>, EAnimationPriority> MontagePriorityMap;
 
     TWeakObjectPtr<USkeletalMeshComponent> SkeletalMeshComponent;

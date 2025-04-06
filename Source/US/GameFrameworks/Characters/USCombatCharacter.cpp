@@ -37,20 +37,37 @@ void AUSCombatCharacter::BeginPlay()
     GetWorld()->GetTimerManager().SetTimerForNextTick(this, &AUSCombatCharacter::DelayedBeginPlay);
 }
 
+AUSWeapon* AUSCombatCharacter::GetEquippedWeapon() const
+{
+    if (!IsValid(CombatComponent))
+    {
+        UE_LOG(LogTemp, Error, TEXT("%s의 Combat Component가 유효하지 않음."), *GetOwner()->GetActorLabel());
+        return nullptr;
+    }
+
+    return CombatComponent->GetEquippedWeapon();
+}
+
+void AUSCombatCharacter::EquipWeapon(AUSWeapon* NewWeapon)
+{
+    if (!IsValid(CombatComponent))
+    {
+        UE_LOG(LogTemp, Error, TEXT("%s의 Combat Component가 유효하지 않음."), *GetOwner()->GetActorLabel());
+        return;
+    }
+    if (!NewWeapon) return;
+
+    CombatComponent->GetWeaponComponent()->EquipWeapon(NewWeapon);
+}
+
 void AUSCombatCharacter::Attack()
 {
-    // Play Animation
     if (!IsValid(CombatComponent) || !IsValid(CharacterAnimationComponent)) return;
 
-    TOptional<bool> IsWeaponEquippedQueryResult = CombatComponent->GetIsWeaponEquipped();
-    if (IsWeaponEquippedQueryResult.IsSet() && IsWeaponEquippedQueryResult.GetValue())
+    if (CombatComponent->Attack())
     {
-        if (CharacterAnimationComponent->PlayAttackMontage())
-        {
-            GetCharacterMovement()->StopMovementImmediately();
-            // 무기 공격
-            CombatComponent->GetWeaponComponent()->UseWeapon();
-        }
+        // GetCharacterMovement()->StopMovementImmediately();
+        CharacterAnimationComponent->PlayAttackMontage();
     }
 }
 
@@ -75,14 +92,14 @@ void AUSCombatCharacter::DelayedBeginPlay()
 
 void AUSCombatCharacter::InitCapsuleCollision()
 {
-    if (!IS_VALID_OR_EXIT(GetCapsuleComponent(), TEXT("Capsule Compoent가 유효하지 않음."))) return;
+    if (!IS_VALID_OR_WARN(GetCapsuleComponent(), FString::Printf(TEXT("%s의 Capsule Compoent가 유효하지 않음."), *GetActorLabel()))) return;
 
     GetCapsuleComponent()->SetCollisionProfileName(IsPlayerControlled() ? TEXT("Player") : TEXT("Enemy"));
 }
 
 void AUSCombatCharacter::InitStatComponent()
 {
-    if (!IS_VALID_OR_EXIT(StatComponent, TEXT("Stat Component가 유효하지 않음."))) return;
+    if (!IS_VALID_OR_WARN(StatComponent, FString::Printf(TEXT("%s의 Stat Compoent가 유효하지 않음."), *GetActorLabel()))) return;
 
     StatComponent->LoadStatsAccordingToLevel();
     StatComponent->OnCharacterDeath.AddDynamic(this, &AUSCombatCharacter::HandleDeath);
@@ -90,13 +107,13 @@ void AUSCombatCharacter::InitStatComponent()
 
 void AUSCombatCharacter::InitCharacterHealthWidgetComponent()
 {
-    if (!IS_VALID_OR_EXIT(CharacterHealthWidgetComponent, TEXT("Character Health Widget Component가 유효하지 않음."))) return;
-    if (!IS_VALID_OR_EXIT(CharacterHealthWidgetClass, TEXT("Character Health Widget Class가 유효하지 않음."))) return;
+    if (!IS_VALID_OR_WARN(CharacterHealthWidgetComponent, FString::Printf(TEXT("%s의 Character Health Widget Component가 유효하지 않음."), *GetActorLabel()))) return;
+    if (!IS_VALID_OR_WARN(CharacterHealthWidgetClass, FString::Printf(TEXT("%s의 BP에서 Character Health Widget Class가 할당되지 않음."), *GetActorLabel()))) return;
 
     CharacterHealthWidgetComponent->SetWidgetClass(CharacterHealthWidgetClass);
     UCharacterHealthWidget* CharacterHealthWidget = Cast<UCharacterHealthWidget>(CharacterHealthWidgetComponent->GetUserWidgetObject());
 
-    if (IS_VALID_OR_WARN(CharacterHealthWidget, TEXT("Character Health Widget이 유효하지 않음.")))
+    if (IS_VALID_OR_WARN(CharacterHealthWidget, FString::Printf(TEXT("%s의 Character Health Widget이 유효하지 않음."), *GetActorLabel())))
     {
         CharacterHealthWidget->BindCharacterStat(StatComponent);
     }

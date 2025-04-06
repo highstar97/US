@@ -1,5 +1,6 @@
 #include "MainHub.h"
 
+#include "Controllers/USPlayerController.h"
 #include "UI/InteractionWidget.h"
 #include "UI/CrosshairWidget.h"
 #include "MailSystem/Widgets/ExpressMailBox.h"
@@ -23,14 +24,16 @@ void UMainHub::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	UWorld* World = GetWorld();
 	if (!IsValid(World)) return;
 
-	APlayerController* PC = UGameplayStatics::GetPlayerController(World, 0);
-	if (!IsValid(PC)) return;
+	AUSPlayerController* PlayerController = GetOwningPlayer<AUSPlayerController>();
+	if (!IsValid(PlayerController)) return;
 
-	FVector2D MousePosition;
-	if (PC->GetMousePosition(MousePosition.X, MousePosition.Y))
+	if (!IsValid(CrosshairWidget)) return;
+
+	FVector2D ScreenPosition;
+	if (PlayerController->ProjectWorldLocationToScreen(PlayerController->GetCrosshairLocation(), ScreenPosition))
 	{
 		float Scale = UWidgetLayoutLibrary::GetViewportScale(this);
-		FVector2D ScaledPosition = MousePosition / Scale;
+		FVector2D ScaledPosition = ScreenPosition / Scale;
 
 		UCanvasPanelSlot* CrosshairSlot = UWidgetLayoutLibrary::SlotAsCanvasSlot(CrosshairWidget);
 		if (IsValid(CrosshairSlot))

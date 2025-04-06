@@ -9,32 +9,24 @@ void UProjectileSubsystem::Initialize(FSubsystemCollectionBase& Collection)
     Super::Initialize(Collection);
 }
 
-void UProjectileSubsystem::InitProjectilePools()
+void UProjectileSubsystem::TryRegisterProjectileInPool(const UProjectileDataAsset* ProjectileDataAsset)
 {
-    for (TPair<UProjectileDataAsset*, AUSProjectilePool*>& ProjectilePool : ProjectilePools)
-    {
-        if (!IsValid(ProjectilePool.Key) || !IsValid(ProjectilePool.Value)) continue;
+    if (!IsValid(ProjectileDataAsset)) return;
 
-        ProjectilePool.Value->InitProjectiles(ProjectilePool.Key);
-    }
+    if (PoolMap.Contains(ProjectileDataAsset)) return;
+
+    AUSProjectilePool* Pool = GetWorld()->SpawnActor<AUSProjectilePool>(AUSProjectilePool::StaticClass());
+    Pool->Init(ProjectileDataAsset);
+
+    PoolMap.Add(ProjectileDataAsset, Pool);
 }
 
-AUSProjectile* UProjectileSubsystem::GetAvailableProjectile(UProjectileDataAsset* DataAsset)
+AUSProjectile* UProjectileSubsystem::GetAvailableProjectile(UProjectileDataAsset* ProjectileDataAsset)
 {
-    if (!IsValid(DataAsset)) return nullptr;
+    if (!IsValid(ProjectileDataAsset)) return nullptr;
 
-    AUSProjectilePool* ProjectilePool = *(ProjectilePools.Find(DataAsset));
+    AUSProjectilePool* ProjectilePool = *(PoolMap.Find(ProjectileDataAsset));
+    if (!IsValid(ProjectilePool)) return nullptr;
 
     return ProjectilePool->GetAvailableProjectile();
-}
-
-void UProjectileSubsystem::RegistProjectilePool(UProjectileDataAsset* DataAsset, AUSProjectilePool* Pool)
-{
-    if (!IsValid(DataAsset)) return;
-
-    if (!IsValid(Pool))
-    {
-        Pool = GetWorld()->SpawnActor<AUSProjectilePool>(AUSProjectilePool::StaticClass());
-    }
-    ProjectilePools.Add(DataAsset, Pool);
 }

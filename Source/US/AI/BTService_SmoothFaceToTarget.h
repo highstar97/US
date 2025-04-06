@@ -16,6 +16,6 @@ protected:
     virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 
 private:
-    UPROPERTY(EditAnywhere, Category = "AI")
-    float RotationSpeed = 10.0f;
+    UPROPERTY(EditAnywhere, Category = "MyVariable | AI Setting | Able To Edit")
+    float RotationSpeed;
 };

@@ -12,5 +12,5 @@ void UUSGameInstance::Init()
 {
     Super::Init();
 
-    IS_VALID_OR_WARN(GlobalDataConfig.Get(), TEXT("Global Data Config가 유효하지 않음."));
+    if (!IS_VALID_OR_WARN(GlobalDataConfig, TEXT("BP에 Global Data Config가 할당되지 않음."))) return;
 }

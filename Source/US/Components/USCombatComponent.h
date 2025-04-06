@@ -5,6 +5,7 @@
 #include "USCombatComponent.generated.h"
 
 class UUSWeaponComponent;
+class AUSWeapon;
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class US_API UUSCombatComponent : public UActorComponent
@@ -17,14 +18,11 @@ public:
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE bool GetIsInCombat() const { return bIsInCombat; }
 
-	TOptional<bool> GetIsWeaponEquipped() const;
+	AUSWeapon* GetEquippedWeapon() const;
 
 	FORCEINLINE UUSWeaponComponent* GetWeaponComponent() const { return WeaponComponent; }
 
-	void Attack();
-
-protected:
-	virtual void BeginPlay() override;
+	bool Attack();
 
 private:
 	void EnterCombat();
@@ -34,13 +32,13 @@ private:
 	void ResetCombatTimer();
 
 private:
-	const float CombatTimeoutDuration = 3.0f;
-
-	FTimerHandle CombatTimerHandle;
-
-	UPROPERTY(EditDefaultsOnly, Category = State, meta = (AllowPrivateAccess = "true"), BlueprintGetter = GetIsInCombat)
+	UPROPERTY(VisibleAnywhere, Category = "MyVariable | State ", meta = (AllowPrivateAccess = "true"), BlueprintGetter = GetIsInCombat)
 	bool bIsInCombat;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Component, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MyVariable | Weapon ", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UUSWeaponComponent> WeaponComponent;
+
+	const float CombatTimeoutThreshold = 3.0f;
+
+	FTimerHandle CombatTimerHandle;
 };

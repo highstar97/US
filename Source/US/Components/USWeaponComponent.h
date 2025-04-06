@@ -14,21 +14,19 @@ class US_API UUSWeaponComponent : public UActorComponent
 public:	
 	UUSWeaponComponent();
 
-	AUSWeapon* GetEquippedWeapon() const { return EquippedWeapon.Get(); }
+	FORCEINLINE AUSWeapon* GetEquippedWeapon() const { return EquippedWeapon; }
 
 	void EquipWeapon(AUSWeapon* NewWeapon);
 
 	void UnequipWeapon();
 
-	void UseWeapon();
-
 protected:
 	virtual void BeginPlay() override;
 
 private:
-	UPROPERTY(EditDefaultsOnly, Category = Weapon, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, Category = "MyVariable | Weapon | Need To Edit", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<AUSWeapon> DefaultWeaponClass;
 
-	UPROPERTY(EditDefaultsOnly, Category = Weapon, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, Category = "MyVariable | Weapon ", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<AUSWeapon> EquippedWeapon;
 };

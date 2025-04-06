@@ -11,7 +11,8 @@ UBTService_CheckTargetInRange::UBTService_CheckTargetInRange()
 	NodeName = "Check Target In Range";
 
     CheckingRadius = 700.0f;
-	ForgetTime = 5.0f;
+	TargetLostThreshold = 5.0f;
+	TargetNotSeenDuration = 0.0f;
 }
 
 void UBTService_CheckTargetInRange::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
@@ -22,6 +23,8 @@ void UBTService_CheckTargetInRange::TickNode(UBehaviorTreeComponent& OwnerComp, 
     UBlackboardComponent* Blackboard = OwnerComp.GetBlackboardComponent();
     AUSCombatCharacter* Self = Cast<AUSCombatCharacter>(Controller->GetCharacter());
 	
+	if (!IsValid(Self)) return;
+
 	UWorld* World = Self->GetWorld();
 	FVector Center = Self->GetActorLocation();
 
@@ -47,7 +50,7 @@ void UBTService_CheckTargetInRange::TickNode(UBehaviorTreeComponent& OwnerComp, 
 				Blackboard->SetValueAsObject("TargetActor", TargetActor);
 				Blackboard->SetValueAsVector("LastKnownLocation", TargetActor->GetActorLocation());
 
-				NotSeenDuration = 0.0f;
+				TargetNotSeenDuration = 0.0f;
 
 				DrawDebugSphere(World, Center, CheckingRadius, 16, FColor::Green, false, 0.2f);
 				DrawDebugPoint(World, TargetActor->GetActorLocation(), 10.0f, FColor::Blue, false, 0.2f);
@@ -58,9 +61,9 @@ void UBTService_CheckTargetInRange::TickNode(UBehaviorTreeComponent& OwnerComp, 
 
 	DrawDebugSphere(World, Center, CheckingRadius, 16, FColor::Red, false, 0.2f);
 	
-	NotSeenDuration += DeltaSeconds;
+	TargetNotSeenDuration += DeltaSeconds;
 
-	if (NotSeenDuration >= ForgetTime)
+	if (TargetNotSeenDuration >= TargetLostThreshold)
 	{
 		Blackboard->SetValueAsBool("IsTargetVisible", false);
 		Blackboard->ClearValue("TargetActor");
