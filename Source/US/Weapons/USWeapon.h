@@ -23,6 +23,8 @@ public:
 
 	virtual void Interact(ACharacter* Interactor) override;
 
+	void Uninteract();
+
 	float GetRange() const;
 
 	FVector GetMuzzleLocation() const;

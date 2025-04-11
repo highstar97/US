@@ -17,7 +17,7 @@ struct FInteractableData
 	GENERATED_USTRUCT_BODY()
 
 public:
-	FInteractableData() : InteractableType(EInteractableType::PRESSSHORT), Name(FText::GetEmpty()), Action(FText::GetEmpty()), Quantity(0), InteractionDuration(0.0f) {};
+	FInteractableData() : InteractableType(EInteractableType::PRESSSHORT), Name(FText::GetEmpty()), Action(FText::GetEmpty()), Quantity(0), InteractionDuration(0.0f), OwningActor(nullptr) {};
 
 	UPROPERTY(EditInstanceOnly)
 	EInteractableType InteractableType;
@@ -33,6 +33,9 @@ public:
 
 	UPROPERTY(EditInstanceOnly)
 	float InteractionDuration;
+
+	UPROPERTY(VisibleAnywhere)
+	AActor* OwningActor;
 };
 
 UINTERFACE(MinimalAPI)

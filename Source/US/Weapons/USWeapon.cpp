@@ -13,7 +13,7 @@ AUSWeapon::AUSWeapon()
 
 	InteractionCapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("InteractionCapsuleComponent"));
 	InteractionCapsuleComponent->InitCapsuleSize(50.0f, 50.0f);
-	InteractionCapsuleComponent->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
+	InteractionCapsuleComponent->SetCollisionProfileName(TEXT("Weapon"));
 	RootComponent = InteractionCapsuleComponent;
 
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
@@ -35,7 +35,17 @@ void AUSWeapon::Interact(ACharacter* Interactor)
 {
 	if (!IsValid(Interactor)) return;
 
+	if (InteractableData.OwningActor) return;	// 상호작용중인 액터가 있으면 종료
+
 	OwnerCharacter = Interactor;
+	InteractableData.OwningActor = Interactor;
+}
+
+void AUSWeapon::Uninteract()
+{
+	if (!InteractableData.OwningActor) return;
+
+	InteractableData.OwningActor = nullptr;
 }
 
 float AUSWeapon::GetRange() const
@@ -78,6 +88,7 @@ void AUSWeapon::Initialize()
 		InteractableData.Quantity = WeaponDataAsset->NumericData.Quantity;
 		InteractableData.InteractionDuration = WeaponDataAsset->NumericData.InteractionDuration;
 		InteractableData.InteractableType = WeaponDataAsset->NumericData.InteractionDuration > 0.0f ? EInteractableType::PRESSLONG : EInteractableType::PRESSSHORT;
+		InteractableData.OwningActor = nullptr;
 
 		SetWeaponOutlineColor();
 	}

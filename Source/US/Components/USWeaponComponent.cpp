@@ -38,6 +38,8 @@ void UUSWeaponComponent::UnequipWeapon()
 {
 	if (!IsValid(EquippedWeapon)) return;
 
+	EquippedWeapon->Uninteract();
+
 	EquippedWeapon->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	EquippedWeapon->SetActorRotation(FRotator::ZeroRotator);
 

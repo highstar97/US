@@ -100,6 +100,16 @@ void UUSInteractionComponent::OnOverlapBegin(UPrimitiveComponent* OverlappedComp
 {
     if (OtherActor && OtherActor->GetClass()->ImplementsInterface(UInteractionInterface::StaticClass()))
     {
+        IInteractionInterface* InteractionInterface = Cast<IInteractionInterface>(OtherActor);
+        if (InteractionInterface)
+        {
+            const FInteractableData& Data = InteractionInterface->InteractableData;
+            if (IsValid(Data.OwningActor))  // 이미 OwningActor가 할당되어 있다면 => 다른 캐릭터가 이미 상호작용 중
+            {
+                return;
+            }
+        }
+
         CurrentInteractable = OtherActor;
         ShowInteractionUI(); 
     }

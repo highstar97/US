@@ -58,7 +58,7 @@ void AUSGun::Attack()
 	FVector MuzzleLocation = GetMuzzleLocation();
 	FVector FireDirection = (TargetLocation - MuzzleLocation).GetSafeNormal2D();
 
-	Projectile->ActivateProjectile(MuzzleLocation, FireDirection);
+	Projectile->ActivateProjectile(MuzzleLocation, FireDirection, Cast<AUSCombatCharacter>(OwnerCharacter.Get()));
 
 	// 디버깅
 	// DrawDebugSphere(GetWorld(), TargetLocation, 10.f, 12, FColor::Red, false, 1.0f);
