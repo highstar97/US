@@ -81,7 +81,10 @@ void AUSCombatCharacter::DelayedBeginPlay()
             InitCapsuleCollision();
             InitStatComponent();
             InitCharacterHealthWidgetComponent();
-            USGameState->HideLevelLoadingWidget();
+            if (IsPlayerControlled())
+            {
+                USGameState->HideLevelLoadingWidget();
+            }
         }
         else
         {

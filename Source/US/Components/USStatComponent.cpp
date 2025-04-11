@@ -1,7 +1,6 @@
 #include "Components/USStatComponent.h"
 
-#include "GlobalDataConfig.h"
-#include "GameInstances/USGameInstance.h"
+#include "DataValidator.h"
 #include "Characters/USCombatCharacter.h"
 #include "Characters/Datas/CharacterStat.h"
 
@@ -51,27 +50,20 @@ void UUSStatComponent::SetAttackSpeed(const float _AttackSpeed)
 
 void UUSStatComponent::LoadStatsAccordingToLevel()
 {
-	if (UWorld* World = GetWorld())
+	if (!IsValid(DataTable_StatByLevel))
 	{
-		UUSGameInstance* USGameInstance = Cast<UUSGameInstance>(World->GetGameInstance());
-		if (!IsValid(USGameInstance)) return;
+		UE_LOG(LogTemp, Warning, TEXT("%s의 Stat Table By Level이 유효하지 않음."), *GetOwner()->GetActorLabel());
+		return;
+	}
 
-		UGlobalDataConfig* CurrenGlobalDataConfig = USGameInstance->GetGlobalDataConfig();
-		if (!IsValid(CurrenGlobalDataConfig)) return;
-
-		UDataTable* StatTable = CurrenGlobalDataConfig->GetCharacterStatTable();
-		if (IsValid(StatTable))
-		{
-			FCharacterStat* Stat = StatTable->FindRow<FCharacterStat>(*FString::FromInt(Level), "");
-			if (Stat)
-			{
-				SetMaxHealth(Stat->MaxHealth);
-				SetCurrentHealth(GetMaxHealth());
-				SetAttack(Stat->Attack);
-				SetDefense(Stat->Defense);
-				SetAttackSpeed(Stat->AttackSpeed);
-			}
-		}
+	FCharacterStat* Stat = DataTable_StatByLevel->FindRow<FCharacterStat>(*FString::FromInt(Level), "");
+	if (Stat)
+	{
+		SetMaxHealth(Stat->MaxHealth);
+		SetCurrentHealth(GetMaxHealth());
+		SetAttack(Stat->Attack);
+		SetDefense(Stat->Defense);
+		SetAttackSpeed(Stat->AttackSpeed);
 	}
 }
 
@@ -83,4 +75,11 @@ void UUSStatComponent::TakeDamage(float DamageAmount)
 	{
 		OnCharacterDeath.Broadcast();
 	}
+}
+
+void UUSStatComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if(!IS_VALID_OR_WARN(DataTable_StatByLevel, FString::Printf(TEXT("%s의 BP에서 DataTable_StatByLevel이 할당되지 않음."), *GetOwner()->GetActorLabel()))) return;
 }

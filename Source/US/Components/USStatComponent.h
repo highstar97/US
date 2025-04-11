@@ -8,6 +8,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCharacterDeath);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMaxHealthChanged, float, MaxHealth);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCurrentHealthChanged, float, CurrentHealth);
 
+class UDataTable;
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class US_API UUSStatComponent : public UActorComponent
 {
@@ -54,7 +56,13 @@ public:
 
 	FOnCharacterDeath OnCharacterDeath;
 
+protected:
+	virtual void BeginPlay() override;
+
 private:
+	UPROPERTY(EditDefaultsOnly, Category = "MyVariable | Data Config | Need To Edit", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UDataTable> DataTable_StatByLevel;
+
 	UPROPERTY(VisibleAnywhere, Category = "MyVariable | Stat ", meta = (AllowPrivateAccess = "true"))
 	int32 Level; 
 	
