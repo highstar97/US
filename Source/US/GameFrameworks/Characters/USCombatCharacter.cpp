@@ -71,6 +71,23 @@ void AUSCombatCharacter::Attack()
     }
 }
 
+void AUSCombatCharacter::HandleDeath()
+{
+    if (!IsValid(StateComponent) || !IsValid(CharacterAnimationComponent)) return;
+
+    if (StateComponent->GetIsDead()) return;
+
+    StateComponent->SetIsDead(true);
+
+    DetachFromControllerPendingDestroy();
+    GetCharacterAnimationComponent()->PlayDeathMontage();
+
+    GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+    SetLifeSpan(1.0f);
+}
+
 void AUSCombatCharacter::DelayedBeginPlay()
 {
     if (UWorld* World = GetWorld())
@@ -120,23 +137,6 @@ void AUSCombatCharacter::InitCharacterHealthWidgetComponent()
     {
         CharacterHealthWidget->BindCharacterStat(StatComponent);
     }
-}
-
-void AUSCombatCharacter::HandleDeath()
-{
-    if (!IsValid(StateComponent) ||!IsValid(CharacterAnimationComponent)) return;
-
-    if (StateComponent->GetIsDead()) return;
-
-    StateComponent->SetIsDead(true);
-
-    DetachFromControllerPendingDestroy();
-    GetCharacterAnimationComponent()->PlayDeathMontage();
-
-    GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-    GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-    SetLifeSpan(1.0f);
 }
 
 float AUSCombatCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)

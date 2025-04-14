@@ -11,7 +11,6 @@ AUSProjectile::AUSProjectile()
     PrimaryActorTick.bCanEverTick = true;
 
     CollisionComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CollisionComponent"));
-    CollisionComponent->SetCollisionObjectType(ECC_GameTraceChannel3);              // ECC_GameTraceChannel1 is 'Attack'
     CollisionComponent->SetCollisionProfileName("Projectile");
     CollisionComponent->SetGenerateOverlapEvents(true);         // 변경됨: Overlap 감지
     CollisionComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);   // 변경됨: Query만 사용
@@ -80,7 +79,7 @@ void AUSProjectile::ActivateProjectile(FVector Location, FVector Direction, AUSC
     SetActorEnableCollision(true);
     SetActorTickEnabled(true);
 
-    UE_LOG(LogTemp, Warning, TEXT("%s Active"), *GetActorLabel());
+    // UE_LOG(LogTemp, Warning, TEXT("%s Active"), *GetActorLabel());
 }
 
 void AUSProjectile::DeactivateProjectile()
@@ -94,7 +93,7 @@ void AUSProjectile::DeactivateProjectile()
     SetActorEnableCollision(false);
     SetActorTickEnabled(false);
 
-    UE_LOG(LogTemp, Warning, TEXT("%s Deactive"), *GetActorLabel());
+    // UE_LOG(LogTemp, Warning, TEXT("%s Deactive"), *GetActorLabel());
 }
 
 void AUSProjectile::BeginPlay()
@@ -114,20 +113,20 @@ void AUSProjectile::OnProjectileOverlap(UPrimitiveComponent* OverlappedComponent
     if (OtherActor == nullptr || OtherActor == OwnerCharacter.Get() || OtherActor == this) return;
 
     DrawDebugSphere(GetWorld(), SweepResult.ImpactPoint, 10.f, 12, FColor::Green, false, 1.0f);
-    UE_LOG(LogTemp, Warning, TEXT("%s Hit by %s"), *OtherActor->GetActorLabel(), *OwnerCharacter.Get()->GetActorLabel());
-
+    
     // 캐릭터 충돌 시 데미지 처리
-    AUSCombatCharacter* HitCharacter = Cast<AUSCombatCharacter>(OtherActor);
-    if (HitCharacter)
+    AUSCombatCharacter* CombatCharacter = Cast<AUSCombatCharacter>(OtherActor);
+    if(!IsValid(CombatCharacter)) return;
+
+    bool bIsTeam = OwnerCharacter.Get()->IsPlayerControlled() == CombatCharacter->IsPlayerControlled();
+    if (bIsTeam)
     {
-        // 데미지 처리 (원하면 DamageType 전달도 가능
-        UGameplayStatics::ApplyDamage(HitCharacter, 100.0f, GetInstigatorController(), this, nullptr);
-        // 히트 이펙트 등 추가 가능
+        return;
     }
     else
     {
-        // 환경 오브젝트 등에 부딪힘 (예: 벽, 상자, 지형 등)
-        // 원하면 파티클, 사운드 재생 가능
+        UE_LOG(LogTemp, Warning, TEXT("%s Hit by %s"), *OtherActor->GetActorLabel(), *OwnerCharacter.Get()->GetActorLabel());
+        UGameplayStatics::ApplyDamage(CombatCharacter, 100.0f, GetInstigatorController(), this, nullptr);
     }
 
     // 투사체 제거

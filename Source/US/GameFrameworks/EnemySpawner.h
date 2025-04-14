@@ -16,6 +16,9 @@ public:
 
 	void SpawnEnemy(TSubclassOf<AUSEnemyCharacter> EnemyClass, FVector Location);
 
+protected:
+	virtual void BeginPlay() override;
+
 private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "MyVariable | Component ", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UStaticMeshComponent> MeshComponent;

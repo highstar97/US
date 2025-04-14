@@ -22,6 +22,11 @@ public:
 
 	FORCEINLINE UMailRouter_Server* GetMailRouter_Server() const { return MailRouter_Server.Get(); }
 
+	void StartRound();
+	
+	UFUNCTION()
+	void FinishRound();
+
 private:
 	UPROPERTY()
 	int32 NumOfMap;

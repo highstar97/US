@@ -11,18 +11,38 @@ URoundManageComponent::URoundManageComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
 
-	CurrentRound = 1;
+	CurrentRound = 0;
+    AliveEnemyCount = 0;
 }
 
-void URoundManageComponent::StartRound(const int32 _Round)
+void URoundManageComponent::StartNextRound()
 {
-    if (const TArray<FEnemyAppearanceInformation>* FoundRows = EnemyAppearanceInformationByRound.Find(_Round))
+    int32 NextRound = CurrentRound + 1;
+    if (const TArray<FEnemyAppearanceInformation>* FoundRows = EnemyAppearanceInformationByRound.Find(NextRound))
     {
+        UE_LOG(LogTemp, Warning, TEXT("%d Round 시작!"), NextRound);
+
+        CurrentRound = NextRound;
+        AliveEnemyCount = 0;
+        for (const FEnemyAppearanceInformation& Row : *FoundRows)
+        {
+            AliveEnemyCount += Row.Count;
+        }
         SpawnEnemies(*FoundRows);
     }
     else
     {
-        UE_LOG(LogTemp, Warning, TEXT("No enemy data found for round %d"), _Round);
+        UE_LOG(LogTemp, Warning, TEXT("No enemy data found for round %d"), NextRound);
+    }
+}
+
+void URoundManageComponent::OnEnemyDied()
+{
+    --AliveEnemyCount;
+    if (AliveEnemyCount <= 0)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("%d Round 종료!"), CurrentRound);
+        OnRoundFinished.Broadcast();    // Delegate로 GameMode에 알림
     }
 }
 
@@ -61,31 +81,36 @@ void URoundManageComponent::BeginPlay()
 
 void URoundManageComponent::SpawnEnemies(const TArray<FEnemyAppearanceInformation>& TableRows_EnemyAppearanceInformation)
 {
-    for (const FEnemyAppearanceInformation& Row : TableRows_EnemyAppearanceInformation)
+    for (const FEnemyAppearanceInformation& Information : TableRows_EnemyAppearanceInformation)
     {
-        TSubclassOf<AUSEnemyCharacter> EnemyClass = LoadEnemyClassByName(Row.EnemyName);
+        TSubclassOf<AUSEnemyCharacter> EnemyClass = LoadEnemyClassByName(Information.EnemyName);
         if (!EnemyClass) continue;
+        
+        TimerHandles.Empty();
 
-        for (int i = 0; i < Row.Count; ++i)
+        for (int32 i = 1; i <= Information.Count; ++i)
         {
-            float Delay = i * Row.SpawnDelay;
-            FTimerHandle TimerHandle;
-
-            GetWorld()->GetTimerManager().SetTimer(TimerHandle, [=]()
+            float Delay = i * Information.SpawnDelay;
+            TimerHandles.Add(FTimerHandle());
+            FTimerDelegate TimerDelegate;
+            TSubclassOf<AUSEnemyCharacter> CapturedEnemyClass = EnemyClass;
+            TimerDelegate.BindLambda([this, CapturedEnemyClass]()
                 {
                     AEnemySpawner* Spawner = GetRandomEnemySpanwer();
                     if (Spawner)
                     {
-                        Spawner->SpawnEnemy(EnemyClass, Spawner->GetActorLocation());
+                        Spawner->SpawnEnemy(CapturedEnemyClass, Spawner->GetActorLocation());
                     }
-                }, Delay, false);
+                });
+
+            GetWorld()->GetTimerManager().SetTimer(TimerHandles[i-1], TimerDelegate, Delay, false);
         }
     }
 }
 
 TSubclassOf<AUSEnemyCharacter> URoundManageComponent::LoadEnemyClassByName(const FString& EnemyName) const
 {
-    FString Path = FString::Printf(TEXT("/Game/Blueprints/Characters/BP_%s.BP_%s"), *EnemyName, *EnemyName);
+    FString Path = FString::Printf(TEXT("/Game/Blueprints/Characters/BP_%s.BP_%s_C"), *EnemyName, *EnemyName);
     return Cast<UClass>(StaticLoadClass(AUSEnemyCharacter::StaticClass(), nullptr, *Path));
 }
 

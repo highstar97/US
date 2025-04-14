@@ -18,6 +18,8 @@ public:
 	virtual void BeginPlay() override;
 
 	// Getter, Setter
+	FORCEINLINE URoundManageComponent* GetRoundManageComponent() const { return RoundManageComponent; }
+
 	FORCEINLINE ULevelLoadingWidget* GetLevelLoadingWidget() const { return LevelLoadingWidget.Get(); }
 
 	void HideLevelLoadingWidget();

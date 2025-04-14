@@ -23,6 +23,8 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	virtual void OnComponentDestroyed(bool bDestroyingHierarchy) override;
+
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "MyVariable | Weapon | Need To Edit", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<AUSWeapon> DefaultWeaponClass;

@@ -30,6 +30,10 @@ public:
 
 	void Attack();
 
+protected:
+	UFUNCTION()
+	virtual void HandleDeath();
+
 private:
 	void DelayedBeginPlay();
 
@@ -38,9 +42,6 @@ private:
 	void InitStatComponent();
 
 	void InitCharacterHealthWidgetComponent();
-
-	UFUNCTION()
-	void HandleDeath();
 
 	float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
 

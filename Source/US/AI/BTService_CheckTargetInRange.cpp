@@ -34,7 +34,7 @@ void UBTService_CheckTargetInRange::TickNode(UBehaviorTreeComponent& OwnerComp, 
 		OverlapResults,
 		Center,
 		FQuat::Identity,
-		ECollisionChannel::ECC_GameTraceChannel1,		// ECC_GameTraceChannel1 is 'Player' (ECC_GameTraceChannel2 is 'Enemy')
+		ECollisionChannel::ECC_GameTraceChannel2,		// ECC_GameTraceChannel2 is 'Enemy' (Enemy Block Player, Ignore Enemy)
 		FCollisionShape::MakeSphere(CheckingRadius),
 		CollisionQueryParam
 	);

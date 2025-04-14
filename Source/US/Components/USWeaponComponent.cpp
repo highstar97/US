@@ -62,3 +62,14 @@ void UUSWeaponComponent::BeginPlay()
 		
 	SpawnedWeapon->Interact(Cast<AUSCombatCharacter>(GetOwner()));
 }
+
+void UUSWeaponComponent::OnComponentDestroyed(bool bDestroyingHierarchy)
+{
+	Super::OnComponentDestroyed(bDestroyingHierarchy);
+
+	if (IsValid(EquippedWeapon))
+	{
+		EquippedWeapon->Destroy();
+		EquippedWeapon = nullptr;
+	}
+}

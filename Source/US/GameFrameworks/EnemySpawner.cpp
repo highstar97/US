@@ -1,5 +1,6 @@
 #include "EnemySpawner.h"
 
+#include "DataValidator.h"
 #include "Characters/USEnemyCharacter.h"
 
 #include "Components/StaticMeshComponent.h"
@@ -29,4 +30,11 @@ void AEnemySpawner::SpawnEnemy(TSubclassOf<AUSEnemyCharacter> EnemyClass, FVecto
     {
         UE_LOG(LogTemp, Warning, TEXT("Failed to spawn enemy at %s"), *Location.ToString());
     }
+}
+
+void AEnemySpawner::BeginPlay()
+{
+    Super::BeginPlay();
+
+    if (!IS_VALID_OR_WARN(MeshComponent->GetStaticMesh(), FString::Printf(TEXT("%s의 BP에 StaticMesh가 할당되지 않음."), *GetActorLabel()))) return;
 }

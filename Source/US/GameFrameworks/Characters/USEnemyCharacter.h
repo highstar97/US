@@ -11,4 +11,7 @@ class US_API AUSEnemyCharacter : public AUSCombatCharacter
 	
 public:
 	AUSEnemyCharacter(const FObjectInitializer& ObjectInitializer);
+
+private:
+	virtual void HandleDeath() override;
 };

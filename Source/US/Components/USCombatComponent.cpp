@@ -45,13 +45,8 @@ bool UUSCombatComponent::Attack()
 
 void UUSCombatComponent::EnterCombat()
 {
-    if (bIsInCombat)
+    if (!bIsInCombat)
     {
-        UE_LOG(LogTemp, Warning, TEXT("Combat Extended"));
-    }
-    else
-    {
-        UE_LOG(LogTemp, Warning, TEXT("Combat Started"));
         bIsInCombat = true;
     }
 
@@ -62,7 +57,6 @@ void UUSCombatComponent::ExitCombat()
 {
     if (!bIsInCombat) return;
 
-    UE_LOG(LogTemp, Warning, TEXT("Combat Ended"));
     bIsInCombat = false;
 }
 
