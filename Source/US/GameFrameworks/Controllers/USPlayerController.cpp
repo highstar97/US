@@ -5,6 +5,7 @@
 #include "Components/USInteractionComponent.h"
 #include "Weapons/USWeapon.h"
 #include "UI/MainHub.h"
+#include "UI/StatWidget.h"
 
 #include "Blueprint/UserWidget.h"
 #include "EnhancedInputComponent.h"
@@ -36,7 +37,17 @@ void AUSPlayerController::BeginPlay()
 		MainHubWidget = CreateWidget<UMainHub>(this, MainHubWidgetClass);
 		if (MainHubWidget.IsValid())
 		{
-			MainHubWidget.Get()->AddToViewport(0);
+			MainHubWidget->AddToViewport(0);
+			UStatWidget* StatWidget = MainHubWidget->GetStatWidget();
+			if (IsValid(StatWidget))
+			{
+				AUSCombatCharacter* CombatCharacter = Cast<AUSCombatCharacter>(GetCharacter());
+				UUSStatComponent* StatComponent = CombatCharacter->GetStatComponent();
+				if (StatComponent)
+				{
+					StatWidget->BindCharacterStat(StatComponent);
+				}
+			}
 		}
 	}
 }

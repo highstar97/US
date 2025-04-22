@@ -1,13 +1,13 @@
 #include "Characters/USHeroCharacter.h"
 
-#include "Components/USStatComponent.h"
+#include "Components/USHeroStatComponent.h"
 
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 AUSHeroCharacter::AUSHeroCharacter(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+	: Super(ObjectInitializer.SetDefaultSubobjectClass<UUSHeroStatComponent>(TEXT("StatComponent")))
 {
 	// Create a camera boom...
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -34,6 +34,19 @@ void AUSHeroCharacter::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 
 	AttackRepeatedly(DeltaSeconds);
+}
+
+void AUSHeroCharacter::AddExp(const float _Exp)
+{
+	Super::AddExp(_Exp);
+
+	// TODO : this(Character)에 버프 혹은 디버프가 있다면 미리 처리
+
+	UUSHeroStatComponent* HeroStatComponent = Cast<UUSHeroStatComponent>(GetStatComponent());
+	if (IsValid(HeroStatComponent))
+	{
+		HeroStatComponent->AddExp(_Exp);
+	}
 }
 
 void AUSHeroCharacter::AttackRepeatedly(float DeltaSeconds)

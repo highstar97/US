@@ -20,6 +20,8 @@ public:
 
     FORCEINLINE bool GetIsActive() const { return bIsActive; }
 
+    FORCEINLINE AUSCombatCharacter* GetOwner() const { return OwnerCharacter.IsValid() ? OwnerCharacter.Get() : nullptr; }
+
     void Init(const UProjectileDataAsset* ProjectileDataAsset);
 
     void ActivateProjectile(FVector Location, FVector Direction, AUSCombatCharacter* _OwnerCharacter);

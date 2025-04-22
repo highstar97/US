@@ -7,6 +7,7 @@
 #include "Components/USStateComponent.h"
 #include "Components/USWeaponComponent.h"
 #include "Components/USCharacterAnimationComponent.h"
+#include "Weapons/USProjectile.h"
 #include "UI/CharacterHealthWidget.h"
 
 #include "EnhancedInputComponent.h"
@@ -71,6 +72,11 @@ void AUSCombatCharacter::Attack()
     }
 }
 
+void AUSCombatCharacter::AddExp(const float _Exp)
+{
+    
+}
+
 void AUSCombatCharacter::HandleDeath()
 {
     if (!IsValid(StateComponent) || !IsValid(CharacterAnimationComponent)) return;
@@ -86,6 +92,11 @@ void AUSCombatCharacter::HandleDeath()
     GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
     SetLifeSpan(1.0f);
+}
+
+void AUSCombatCharacter::HandleLevel(const int32 _Level)
+{
+    StatComponent->LoadStatsAccordingToLevel();
 }
 
 void AUSCombatCharacter::DelayedBeginPlay()
@@ -123,6 +134,7 @@ void AUSCombatCharacter::InitStatComponent()
 
     StatComponent->LoadStatsAccordingToLevel();
     StatComponent->OnCharacterDeath.AddDynamic(this, &AUSCombatCharacter::HandleDeath);
+    StatComponent->OnLevelChanged.AddDynamic(this, &AUSCombatCharacter::HandleLevel);
 }
 
 void AUSCombatCharacter::InitCharacterHealthWidgetComponent()
@@ -144,10 +156,19 @@ float AUSCombatCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dam
     Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
     if (!IsValid(StatComponent)) return 0.0f;
+
+    if (!IsValid(CombatComponent)) return 0.0f;
     
     // TODO : this(Character)에 버프 혹은 디버프가 있다면 미리 처리
 
     float FinalDamage = DamageAmount;
+
+    if (FinalDamage >= 0.0f)
+    {
+        AUSProjectile* Projectile = Cast<AUSProjectile>(DamageCauser);
+        AUSCombatCharacter* DamageCauserCharacter = Cast<AUSCombatCharacter>(Projectile->GetOwner());
+        CombatComponent->SetLastDamageCauser(DamageCauserCharacter);
+    }
 
     StatComponent->TakeDamage(FinalDamage);
 

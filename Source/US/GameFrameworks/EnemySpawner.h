@@ -14,7 +14,7 @@ class US_API AEnemySpawner : public AActor
 public:	
 	AEnemySpawner();
 
-	void SpawnEnemy(TSubclassOf<AUSEnemyCharacter> EnemyClass, FVector Location);
+	void SpawnEnemy(TSubclassOf<AUSEnemyCharacter> EnemyClass, int32 EnemyLevel, FVector Location);
 
 protected:
 	virtual void BeginPlay() override;

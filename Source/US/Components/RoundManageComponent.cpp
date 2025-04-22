@@ -12,7 +12,8 @@ URoundManageComponent::URoundManageComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 
 	CurrentRound = 0;
-    AliveEnemyCount = 0;
+    NumOfAliveEnemy = 0;
+    NumOfSpawnedEnemy = 0;
 }
 
 void URoundManageComponent::StartNextRound()
@@ -20,15 +21,19 @@ void URoundManageComponent::StartNextRound()
     int32 NextRound = CurrentRound + 1;
     if (const TArray<FEnemyAppearanceInformation>* FoundRows = EnemyAppearanceInformationByRound.Find(NextRound))
     {
-        UE_LOG(LogTemp, Warning, TEXT("%d Round 시작!"), NextRound);
-
         CurrentRound = NextRound;
-        AliveEnemyCount = 0;
+        NumOfAliveEnemy = 0;
+        NumOfSpawnedEnemy = 0;
         for (const FEnemyAppearanceInformation& Row : *FoundRows)
         {
-            AliveEnemyCount += Row.Count;
+            NumOfAliveEnemy += Row.Count;
+            NumOfSpawnedEnemy += Row.Count;
         }
         SpawnEnemies(*FoundRows);
+
+        OnRoundStarted.Broadcast(CurrentRound);
+        OnUpdateNumOfEnemy.Broadcast(NumOfAliveEnemy, NumOfSpawnedEnemy);
+        UE_LOG(LogTemp, Warning, TEXT("%d Round 시작!"), NextRound);
     }
     else
     {
@@ -38,8 +43,9 @@ void URoundManageComponent::StartNextRound()
 
 void URoundManageComponent::OnEnemyDied()
 {
-    --AliveEnemyCount;
-    if (AliveEnemyCount <= 0)
+    --NumOfAliveEnemy;
+    OnUpdateNumOfEnemy.Broadcast(NumOfAliveEnemy, NumOfSpawnedEnemy);
+    if (NumOfAliveEnemy <= 0)
     {
         UE_LOG(LogTemp, Warning, TEXT("%d Round 종료!"), CurrentRound);
         OnRoundFinished.Broadcast();    // Delegate로 GameMode에 알림
@@ -91,15 +97,16 @@ void URoundManageComponent::SpawnEnemies(const TArray<FEnemyAppearanceInformatio
         for (int32 i = 1; i <= Information.Count; ++i)
         {
             float Delay = i * Information.SpawnDelay;
+            int32 EnemyLevel = Information.EnemyLevel;
             TimerHandles.Add(FTimerHandle());
             FTimerDelegate TimerDelegate;
             TSubclassOf<AUSEnemyCharacter> CapturedEnemyClass = EnemyClass;
-            TimerDelegate.BindLambda([this, CapturedEnemyClass]()
+            TimerDelegate.BindLambda([this, EnemyLevel, CapturedEnemyClass]()
                 {
                     AEnemySpawner* Spawner = GetRandomEnemySpanwer();
                     if (Spawner)
                     {
-                        Spawner->SpawnEnemy(CapturedEnemyClass, Spawner->GetActorLocation());
+                        Spawner->SpawnEnemy(CapturedEnemyClass, EnemyLevel, Spawner->GetActorLocation() + FVector(0.0f, 0.0f, 100.0f));
                     }
                 });
 

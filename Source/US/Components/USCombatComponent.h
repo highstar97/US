@@ -6,6 +6,7 @@
 
 class UUSWeaponComponent;
 class AUSWeapon;
+class AUSCombatCharacter;
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class US_API UUSCombatComponent : public UActorComponent
@@ -21,6 +22,10 @@ public:
 	AUSWeapon* GetEquippedWeapon() const;
 
 	FORCEINLINE UUSWeaponComponent* GetWeaponComponent() const { return WeaponComponent; }
+
+	FORCEINLINE AUSCombatCharacter* GetLastDamageCauser() const { return LastDamageCauser.IsValid() ? LastDamageCauser.Get() : nullptr; }
+
+	void SetLastDamageCauser(AUSCombatCharacter* _DamageCauserCharacter) { LastDamageCauser = _DamageCauserCharacter; }
 
 	bool Attack();
 
@@ -41,4 +46,6 @@ private:
 	const float CombatTimeoutThreshold = 3.0f;
 
 	FTimerHandle CombatTimerHandle;
+
+	TWeakObjectPtr<AUSCombatCharacter> LastDamageCauser;
 };

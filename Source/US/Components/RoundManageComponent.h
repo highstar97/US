@@ -4,7 +4,9 @@
 #include "Components/ActorComponent.h"
 #include "RoundManageComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRoundStarted, int32, CurrentRound);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRoundFinished);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUpdateNumOfEnemy, int32, NumOfAliveEnemy, int32, NumOfSpawnedEnemy);
 
 struct FEnemyAppearanceInformation;
 class AUSEnemyCharacter;
@@ -21,11 +23,20 @@ public:
 
 	FORCEINLINE int32 GetCurrentRound() const { return CurrentRound; }
 
+	FORCEINLINE int32 GetNumOfAliveEnemy() const { return NumOfAliveEnemy; }
+
+	FORCEINLINE int32 GetNumOfSpawnedEnemy() const { return NumOfSpawnedEnemy; }
+
 	void StartNextRound();
 
 	void OnEnemyDied();
 
+public:
+	FOnRoundStarted OnRoundStarted;
+	
 	FOnRoundFinished OnRoundFinished;
+	
+	FOnUpdateNumOfEnemy OnUpdateNumOfEnemy;
 
 protected:
 	virtual void BeginPlay() override;
@@ -42,8 +53,11 @@ private:
 	int32 CurrentRound;
 
 	UPROPERTY(VisibleAnywhere, Category = "MyVariable | InGame ", meta = (AllowPrivateAccss = "true"))
-	int32 AliveEnemyCount;
-		
+	int32 NumOfAliveEnemy;
+	
+	UPROPERTY(VisibleAnywhere, Category = "MyVariable | InGame ", meta = (AllowPrivateAccss = "true"))
+	int32 NumOfSpawnedEnemy;
+
 	UPROPERTY(VisibleAnywhere, Category = "MyVariable | InGame ", meta = (AllowPrivateAccess = "true"))
 	TArray<TObjectPtr<AEnemySpawner>> EnemySpawners;
 

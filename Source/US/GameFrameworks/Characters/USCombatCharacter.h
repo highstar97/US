@@ -30,9 +30,18 @@ public:
 
 	void Attack();
 
+	virtual void AddExp(const float _Exp);
+
 protected:
 	UFUNCTION()
 	virtual void HandleDeath();
+
+	UFUNCTION()
+	virtual void HandleLevel(const int32 _Level);
+
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MyVariable | Component ", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UUSStatComponent> StatComponent;
 
 private:
 	void DelayedBeginPlay();
@@ -48,9 +57,6 @@ private:
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MyVariable | Component ", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UUSCombatComponent> CombatComponent;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MyVariable | Component ", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UUSStatComponent> StatComponent;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MyVariable | UI ", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UWidgetComponent> CharacterHealthWidgetComponent;

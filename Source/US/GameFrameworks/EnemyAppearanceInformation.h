@@ -10,7 +10,7 @@ struct FEnemyAppearanceInformation : public FTableRowBase
     GENERATED_BODY()
 
 public:
-    FEnemyAppearanceInformation() : Round(0), Count(0), SpawnDelay(0), EnemyName("") {}
+    FEnemyAppearanceInformation() : Round(0), Count(0), SpawnDelay(0.0f), EnemyName(""), EnemyLevel(0) {}
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     int32 Round;
@@ -23,4 +23,7 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     FString EnemyName;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    int32 EnemyLevel;
 };

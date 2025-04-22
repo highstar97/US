@@ -5,8 +5,12 @@
 #include "USStatComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCharacterDeath);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLevelChanged, int32, Level);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMaxHealthChanged, float, MaxHealth);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCurrentHealthChanged, float, CurrentHealth);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttackChanged, float, Attack);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDefenseChanged, float, Defense);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttackSpeedChanged, float, AttackSpeed);
 
 class UDataTable;
 
@@ -45,21 +49,29 @@ public:
 	void SetAttackSpeed(const float _AttackSpeed);
 
 	// Function
-	void LoadStatsAccordingToLevel();
+	virtual void LoadStatsAccordingToLevel();
 
 	void TakeDamage(float DamageAmount);
 	
 	// Delegate
+	FOnCharacterDeath OnCharacterDeath;
+	
+	FOnLevelChanged OnLevelChanged;
+	
 	FOnMaxHealthChanged OnMaxHealthChanged;
 
 	FOnCurrentHealthChanged OnCurrentHealthChanged;
 
-	FOnCharacterDeath OnCharacterDeath;
+	FOnAttackChanged OnAttackChanged;
+
+	FOnDefenseChanged OnDefenseChanged;
+
+	FOnAttackSpeedChanged OnAttackSpeedChanged;
 
 protected:
 	virtual void BeginPlay() override;
 
-private:
+protected:
 	UPROPERTY(EditDefaultsOnly, Category = "MyVariable | Data Config | Need To Edit", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UDataTable> DataTable_StatByLevel;
 

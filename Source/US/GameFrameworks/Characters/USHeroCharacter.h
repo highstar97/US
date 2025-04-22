@@ -22,6 +22,8 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 
 private:
+	virtual void AddExp(const float _Exp) override;
+
 	void AttackRepeatedly(float DeltaSeconds);
 
 private:
