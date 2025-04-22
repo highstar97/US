@@ -11,6 +11,13 @@ AUSEnemyCharacter::AUSEnemyCharacter(const FObjectInitializer& ObjectInitializer
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UUSEnemyStatComponent>(TEXT("StatComponent")))
 {
 	GetCharacterMovement()->MaxWalkSpeed = 100.0f;
+	
+	USkeletalMeshComponent* SKMeshComponent = GetMesh();
+	if (SKMeshComponent)
+	{
+		SKMeshComponent->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;
+		SKMeshComponent->bEnableUpdateRateOptimizations = true;
+	}
 
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }

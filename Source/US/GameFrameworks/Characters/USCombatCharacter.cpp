@@ -159,6 +159,10 @@ float AUSCombatCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 
     if (!IsValid(CombatComponent)) return 0.0f;
     
+    if (!IsValid(CharacterAnimationComponent)) return 0.0f;
+
+    CharacterAnimationComponent->PlayHitReactionMontage();
+
     // TODO : this(Character)에 버프 혹은 디버프가 있다면 미리 처리
 
     float FinalDamage = DamageAmount;
