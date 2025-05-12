@@ -2,9 +2,10 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
+#include "Components/USStateComponent.h"
 #include "USGameInstance.generated.h"
 
-class UGlobalDataConfig;
+class UUSAnimationSharingSystem;
 
 UCLASS()
 class US_API UUSGameInstance : public UGameInstance
@@ -13,4 +14,12 @@ class US_API UUSGameInstance : public UGameInstance
 	
 public:
 	UUSGameInstance();
+
+	void UpdateActorAnimationState(AActor* Actor, EState NewState);
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MyVariable | Animation ")
+	TSubclassOf<UUSAnimationSharingSystem> AnimationSharingSystemClass;
+
+	TObjectPtr< UUSAnimationSharingSystem> AnimationSharingSystem;
 };

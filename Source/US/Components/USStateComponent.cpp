@@ -1,6 +1,8 @@
 #include "Components/USStateComponent.h"
 
 #include "Characters/USCharacter.h"
+#include "GameInstances/USGameInstance.h"
+
 #include "GameFramework/CharacterMovementComponent.h"
 
 UUSStateComponent::UUSStateComponent()
@@ -19,24 +21,40 @@ void UUSStateComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 
     if (!Character.IsValid() || !MovementComponent.IsValid()) return;
 
+    EState NextState;
+
     Velocity = MovementComponent->Velocity;
     Speed = Velocity.Size2D();
 
     if (MovementComponent.Get()->IsFalling())
     {
-        CurrentState = EState::FALLING;
+        NextState = EState::FALLING;
     }
     else if (MovementComponent.Get()->GetCurrentAcceleration().Size() > 0.0f && Speed > 0.0f)
     {
-        CurrentState = EState::WALKING;
+        NextState = EState::WALKING;
     }
     else if(CurrentState == EState::INTERACTING)
     {
-        
+        NextState = EState::INTERACTING;
     }
     else
     {
-        CurrentState = EState::IDLE;
+        NextState = EState::IDLE;
+    }
+
+    if (NextState != CurrentState)
+    {
+        CurrentState = NextState;
+
+        if (UGameInstance* GameInstance = GetWorld()->GetGameInstance())
+        {
+            UUSGameInstance* USGameInstance = Cast<UUSGameInstance>(GameInstance);
+            if (IsValid(USGameInstance))
+            {
+                USGameInstance->UpdateActorAnimationState(Character.Get(), CurrentState);
+            }
+        }
     }
 }
 
